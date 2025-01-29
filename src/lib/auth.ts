@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
-import { JWTPayload, jwtVerify, SignJWT } from "jose";
+import { jwtVerify, SignJWT } from "jose";
+import { cookies } from "next/headers";
 
 export interface DecodedToken {
   userId: string;
@@ -44,6 +45,27 @@ export async function verifyToken(
     return decodedToken;
   } catch (error) {
     console.error("Token verification error:", error);
+    return null;
+  }
+}
+
+export async function auth(): Promise<DecodedToken | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const verified = await jwtVerify(token, getJWTSecretKey());
+    const decodedToken = {
+      userId: verified.payload.userId as string,
+      role: verified.payload.role as string,
+    };
+    return decodedToken;
+  } catch (error) {
+    console.error("Auth error:", error);
     return null;
   }
 }

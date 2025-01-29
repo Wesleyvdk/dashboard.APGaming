@@ -2,14 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Editor } from "@/components/editor";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import type { News } from "@/lib/types";
+import React from "react";
 
 export default function NewsForm({
-  params,
+  params: paramsPromise,
 }: {
-  params: { action: string; id?: string };
+  params: Promise<{ action: string; id?: string }>;
 }) {
+  const params = React.use(paramsPromise);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [isPublished, setIsPublished] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -19,15 +28,12 @@ export default function NewsForm({
   }, [params.action, params.id]);
 
   const fetchNews = async (id: string) => {
-    const response = await fetch(`/api/news/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    const response = await fetch(`/api/news/${id}`);
     if (response.ok) {
-      const data = await response.json();
+      const data: News = await response.json();
       setTitle(data.title);
-      setContent(data.content);
+      setContent(data.content.replace("<p>", "").replace("</p>", ""));
+      setIsPublished(!!data.publishedAt);
     }
   };
 
@@ -41,9 +47,8 @@ export default function NewsForm({
       method,
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
-      body: JSON.stringify({ title, content }),
+      body: JSON.stringify({ title, content, isPublished }),
     });
 
     if (response.ok) {
@@ -52,44 +57,31 @@ export default function NewsForm({
   };
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">
-        {params.action === "edit" ? "Edit" : "Create"} News Article
-      </h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="title" className="block mb-1">
-            Title
-          </label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="content" className="block mb-1">
-            Content
-          </label>
-          <textarea
-            id="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
-            rows={10}
-            required
-          ></textarea>
-        </div>
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          {params.action === "edit" ? "Update" : "Create"} Article
-        </button>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit} className="w-full space-y-8">
+      <div>
+        <Label htmlFor="title">Title</Label>
+        <Input
+          id="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="content">Content</Label>
+        <Editor value={content} onChange={setContent} />
+      </div>
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="published"
+          checked={isPublished}
+          onCheckedChange={(checked) => setIsPublished(checked as boolean)}
+        />
+        <Label htmlFor="published">Publish immediately</Label>
+      </div>
+      <Button type="submit">
+        {params.action === "edit" ? "Update" : "Create"} Article
+      </Button>
+    </form>
   );
 }

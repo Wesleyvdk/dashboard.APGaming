@@ -10,14 +10,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Existing models...
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  News      News[]
+  id            String         @id @default(cuid())
+  email         String        @unique
+  password      String
+  role          Role          @default(USER)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  news          News[]
+  tasks         Task[]        @relation("AssignedTasks")
+  createdTasks  Task[]        @relation("CreatedTasks")
+  activities    Activity[]
+  teams         Team[]        @relation("TeamManagers")
 }
 
 enum Role {
@@ -25,6 +30,99 @@ enum Role {
   NEWS_WRITER
   TEAM_MANAGER
   ADMIN
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus @default(PENDING)
+  priority    Priority   @default(MEDIUM)
+  dueDate     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  assignedTo  User      @relation("AssignedTasks", fields: [userId], references: [id])
+  userId      String
+  createdBy   User      @relation("CreatedTasks", fields: [creatorId], references: [id])
+  creatorId   String
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Activity {
+  id        String      @id @default(cuid())
+  type      ActivityType
+  message   String
+  metadata  Json?
+  createdAt DateTime    @default(now())
+  user      User        @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+enum ActivityType {
+  NEWS_CREATED
+  NEWS_UPDATED
+  ROSTER_CHANGED
+  TASK_CREATED
+  TASK_UPDATED
+  USER_ROLE_CHANGED
+}
+
+model Team {
+  id          String    @id @default(cuid())
+  name        String
+  game        String
+  managers    User[]    @relation("TeamManagers")
+  players     Player[]
+  matches     Match[]
+}
+
+model Player {
+  id        String    @id @default(cuid())
+  name      String
+  role      String?
+  team      Team      @relation(fields: [teamId], references: [id])
+  teamId    String
+  joinDate  DateTime  @default(now())
+  endDate   DateTime?
+}
+
+model Match {
+  id          String    @id @default(cuid())
+  type        MatchType
+  team        Team      @relation(fields: [teamId], references: [id])
+  teamId      String
+  opponent    String
+  date        DateTime
+  result      String?
+  notes       String?
+}
+
+enum MatchType {
+  TOURNAMENT
+  SCRIM
+  OFFICIAL
+}
+
+model Announcement {
+  id        String    @id @default(cuid())
+  title     String
+  content   String
+  priority  Priority  @default(MEDIUM)
+  createdAt DateTime  @default(now())
+  expiresAt DateTime?
+  isActive  Boolean   @default(true)
 }
 
 model News {
@@ -35,6 +133,5 @@ model News {
   authorId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  publishedAt DateTime?
 }
-
-// Existing models...

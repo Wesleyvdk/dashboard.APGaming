@@ -40,7 +40,7 @@ export default function DashboardLayout({
     <div className="flex h-screen">
       <SidebarProvider>
         <AppSidebar user={user} />
-        <main className="flex gap-2">
+        <main className="flex w-full p-4">
           <SidebarTrigger />
           {children}
         </main>
