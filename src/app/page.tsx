@@ -1,4 +1,3 @@
-import { addAdminUser } from "@/scripts/add-admin";
 import Image from "next/image";
 
 export default async function Home() {
