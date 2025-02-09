@@ -1,0 +1,225 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Existing models...
+model User {
+  id            String         @id @default(cuid())
+  username      String        @unique
+  password      String?
+  role          Role          @default(USER)
+  status        Status        @default(PENDING)
+  invitationToken String?     @unique
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  news          News[]
+  tasks         Task[]        @relation("AssignedTasks")
+  createdTasks  Task[]        @relation("CreatedTasks")
+  activities    Activity[]
+  teams         Team[]        @relation("TeamManagers")
+  managedGames GameManager[]
+  playerNotes  PlayerNote[]
+}
+
+enum Role {
+  USER
+  NEWS_WRITER
+  TEAM_MANAGER
+  ADMIN
+}
+
+enum Status {
+  PENDING
+  ACTIVE
+  DISABLED
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus @default(PENDING)
+  priority    Priority   @default(MEDIUM)
+  dueDate     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  assignedTo  User      @relation("AssignedTasks", fields: [userId], references: [id])
+  userId      String
+  createdBy   User      @relation("CreatedTasks", fields: [creatorId], references: [id])
+  creatorId   String
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Activity {
+  id        String      @id @default(cuid())
+  type      ActivityType
+  message   String
+  metadata  Json?
+  createdAt DateTime    @default(now())
+  user      User        @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+enum ActivityType {
+  NEWS_CREATED
+  NEWS_UPDATED
+  ROSTER_CHANGED
+  TASK_CREATED
+  TASK_UPDATED
+  USER_ROLE_CHANGED
+}
+
+model Team {
+  id          String    @id @default(cuid())
+  name        String
+  game        Game      @relation(fields: [gameId], references: [id])
+  gameId      String
+  managers    User[]    @relation("TeamManagers")
+  players     Player[]
+  matches     Match[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Game {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  teams       Team[]
+  managers    GameManager[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model GameManager {
+  id        String    @id @default(cuid())
+  game      Game      @relation(fields: [gameId], references: [id])
+  gameId    String
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([gameId, userId])
+}
+
+model Player {
+  id            String    @id @default(cuid())
+  firstName     String
+  lastName      String
+  inGameName    String
+  username      String?   @unique
+  dateOfBirth   DateTime?
+  country       String?
+  team          Team?     @relation(fields: [teamId], references: [id])
+  teamId        String?
+  role          String?
+  rank          String?
+  joinDate      DateTime  @default(now())
+  endDate       DateTime?
+  socialLinks   Json?     // Store social media links
+  stats         PlayerStats?
+  contracts     Contract[]
+  notes         PlayerNote[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model PlayerStats {
+  id        String   @id @default(cuid())
+  player    Player   @relation(fields: [playerId], references: [id])
+  playerId  String   @unique
+  stats     Json     // Store game-specific stats
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Contract {
+  id            String    @id @default(cuid())
+  player        Player    @relation(fields: [playerId], references: [id])
+  playerId      String
+  startDate     DateTime
+  endDate       DateTime
+  terms         String?   // Contract terms or notes
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model PlayerNote {
+  id        String   @id @default(cuid())
+  player    Player   @relation(fields: [playerId], references: [id])
+  playerId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  content   String
+  isPrivate Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Match {
+  id          String    @id @default(cuid())
+  type        MatchType
+  team        Team      @relation(fields: [teamId], references: [id])
+  teamId      String
+  opponent    String
+  date        DateTime
+  result      String?
+  notes       String?
+}
+
+enum MatchType {
+  TOURNAMENT
+  SCRIM
+  OFFICIAL
+}
+
+model Announcement {
+  id        String    @id @default(cuid())
+  title     String
+  content   String
+  priority  Priority  @default(MEDIUM)
+  createdAt DateTime  @default(now())
+  expiresAt DateTime?
+  isActive  Boolean   @default(true)
+}
+
+model News {
+  id          String    @id @default(cuid())
+  title       String
+  content     String
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+  tags        Tag[]
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  name  String @unique
+  news  News[]
+}
