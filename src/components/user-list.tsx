@@ -18,8 +18,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Role } from "@/lib/types";
 
+export enum Role {
+  USER = "USER",
+  NEWS_WRITER = "NEWS_WRITER",
+  TEAM_MANAGER = "TEAM_MANAGER",
+  ADMIN = "ADMIN",
+}
 interface User {
   id: string;
   username: string;
