@@ -51,6 +51,10 @@ const roleDescriptions: RoleDescription[] = [
 export function RolePermissions() {
   const { toast } = useToast();
 
+  if (!roleDescriptions) {
+    return <div>Loading roles...</div>;
+  }
+
   return (
     <div className="space-y-6">
       {roleDescriptions.map((roleDesc) => (
