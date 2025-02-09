@@ -7,7 +7,7 @@ export async function GET() {
     include: {
       author: {
         select: {
-          email: true,
+          username: true,
         },
       },
       tags: true,

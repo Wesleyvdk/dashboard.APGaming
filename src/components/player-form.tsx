@@ -65,14 +65,14 @@ export function PlayerForm({ games, player }: PlayerFormProps) {
   const form = useForm<z.infer<typeof playerFormSchema>>({
     resolver: zodResolver(playerFormSchema),
     defaultValues: {
-      firstName: player?.personalInfo.firstName || "",
-      lastName: player?.personalInfo.lastName || "",
-      inGameName: player?.personalInfo.inGameName || "",
+      firstName: player?.firstName || "",
+      lastName: player?.lastName || "",
+      inGameName: player?.inGameName || "",
       username: player?.username || "",
-      dateOfBirth: player?.personalInfo.dateOfBirth
-        ? new Date(player.personalInfo.dateOfBirth).toISOString().split("T")[0]
+      dateOfBirth: player?.dateOfBirth
+        ? new Date(player.dateOfBirth).toISOString().split("T")[0]
         : "",
-      country: player?.personalInfo.country || "",
+      country: player?.country || "",
       teamId: player?.teamId || "",
       role: player?.role || "",
       rank: player?.rank || "",

@@ -25,7 +25,7 @@ export async function NewsWidget() {
                   {news.content}
                 </p>
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>By {news.author.email}</span>
+                  <span>By {news.author.username}</span>
                   <span>
                     {formatDistanceToNow(
                       new Date(news.publishedAt || news.createdAt),

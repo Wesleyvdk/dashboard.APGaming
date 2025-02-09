@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { sendInvitationEmail } from "@/lib/email";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
@@ -11,7 +10,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { email, role } = await request.json();
+  const { username, role } = await request.json();
 
   // Generate a unique invitation token
   const invitationToken = generateInvitationToken();
@@ -21,16 +20,13 @@ export async function POST(request: Request) {
   // Create a new user with a pending status
   const newUser = await prisma.user.create({
     data: {
-      email,
+      username,
       password,
       role,
       status: "PENDING",
       invitationToken,
     },
   });
-
-  // Send invitation email
-  await sendInvitationEmail(email, invitationToken, password);
 
   return NextResponse.json({ message: "User invited successfully" });
 }

@@ -40,7 +40,7 @@ export const columns: ColumnDef<News>[] = [
     },
   },
   {
-    accessorKey: "author.email",
+    accessorKey: "author.username",
     header: "Author",
   },
   {

@@ -21,7 +21,7 @@ export async function POST(
     include: {
       user: {
         select: {
-          email: true,
+          username: true,
         },
       },
     },

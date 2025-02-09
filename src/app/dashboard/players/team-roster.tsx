@@ -40,11 +40,9 @@ export function TeamRoster({ team }: TeamRosterProps) {
           <TableRow key={player.id}>
             <TableCell>
               <div>
-                <div className="font-medium">
-                  {player.personalInfo.inGameName}
-                </div>
+                <div className="font-medium">{player.inGameName}</div>
                 <div className="text-sm text-muted-foreground">
-                  {player.personalInfo.firstName} {player.personalInfo.lastName}
+                  {player.firstName} {player.lastName}
                 </div>
               </div>
             </TableCell>

@@ -23,7 +23,7 @@ export async function GET(
     include: {
       author: {
         select: {
-          email: true,
+          username: true,
         },
       },
     },
@@ -56,7 +56,7 @@ export async function POST(
     include: {
       author: {
         select: {
-          email: true,
+          username: true,
         },
       },
     },

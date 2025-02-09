@@ -128,7 +128,7 @@ model Player {
   firstName     String
   lastName      String
   inGameName    String
-  email         String?   @unique
+  username      String?   @unique
   dateOfBirth   DateTime?
   country       String?
   team          Team?     @relation(fields: [teamId], references: [id])

@@ -22,7 +22,7 @@ import { Role } from "@/lib/types";
 
 interface User {
   id: string;
-  email: string;
+  username: string;
   role: Role;
 }
 
@@ -88,7 +88,7 @@ export function UserList() {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Email</TableHead>
+          <TableHead>username</TableHead>
           <TableHead>Role</TableHead>
           <TableHead>Actions</TableHead>
         </TableRow>
@@ -96,7 +96,7 @@ export function UserList() {
       <TableBody>
         {users.map((user) => (
           <TableRow key={user.id}>
-            <TableCell>{user.email}</TableCell>
+            <TableCell>{user.username}</TableCell>
             <TableCell>
               <Select
                 value={user.role}

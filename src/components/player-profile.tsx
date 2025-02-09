@@ -35,8 +35,8 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="font-medium">Email:</dt>
-                <dd>{player.email || "N/A"}</dd>
+                <dt className="font-medium">Username:</dt>
+                <dd>{player.username || "N/A"}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="font-medium">Date of Birth:</dt>

@@ -2,7 +2,7 @@
 CREATE TYPE "Role" AS ENUM ('USER', 'NEWS_WRITER', 'TEAM_MANAGER', 'ADMIN');
 
 -- CreateEnum
-CREATE TYPE "Status" AS ENUM ('PENDING', 'ACTIVE');
+CREATE TYPE "Status" AS ENUM ('PENDING', 'ACTIVE', 'DISABLED');
 
 -- CreateEnum
 CREATE TYPE "TaskStatus" AS ENUM ('PENDING', 'IN_PROGRESS', 'COMPLETED');
@@ -19,11 +19,11 @@ CREATE TYPE "MatchType" AS ENUM ('TOURNAMENT', 'SCRIM', 'OFFICIAL');
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
+    "password" TEXT,
     "role" "Role" NOT NULL DEFAULT 'USER',
-    "status" "Status" NOT NULL,
-    "invitationToken" TEXT NOT NULL,
+    "status" "Status" NOT NULL DEFAULT 'PENDING',
+    "invitationToken" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -96,7 +96,7 @@ CREATE TABLE "Player" (
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "inGameName" TEXT NOT NULL,
-    "email" TEXT,
+    "username" TEXT,
     "dateOfBirth" TIMESTAMP(3),
     "country" TEXT,
     "teamId" TEXT,
@@ -213,7 +213,10 @@ CREATE TABLE "_NewsToTag" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_invitationToken_key" ON "User"("invitationToken");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Game_name_key" ON "Game"("name");
@@ -222,7 +225,7 @@ CREATE UNIQUE INDEX "Game_name_key" ON "Game"("name");
 CREATE UNIQUE INDEX "GameManager_gameId_userId_key" ON "GameManager"("gameId", "userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Player_email_key" ON "Player"("email");
+CREATE UNIQUE INDEX "Player_username_key" ON "Player"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "PlayerStats_playerId_key" ON "PlayerStats"("playerId");

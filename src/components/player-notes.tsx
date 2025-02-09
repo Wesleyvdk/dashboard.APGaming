@@ -70,7 +70,7 @@ export function PlayerNotes({ player }: PlayerNotesProps) {
               <div key={note.id} className="border-b pb-4">
                 <p>{note.content}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  By {note.author.email} on{" "}
+                  By {note.author.username} on{" "}
                   {new Date(note.createdAt).toLocaleString()}
                 </p>
               </div>

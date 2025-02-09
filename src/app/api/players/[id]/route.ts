@@ -20,7 +20,7 @@ export async function GET(
         include: {
           author: {
             select: {
-              email: true,
+              username: true,
             },
           },
         },
@@ -55,7 +55,7 @@ export async function PUT(
       firstName: data.firstName,
       lastName: data.lastName,
       inGameName: data.inGameName,
-      email: data.email,
+      username: data.username,
       dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
       country: data.country,
       teamId: data.teamId,

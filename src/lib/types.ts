@@ -90,7 +90,14 @@ export type Team = {
 export type Player = {
   id: string;
   username?: string;
-  personalInfo: playerPersonalInfo;
+  firstName: string;
+  lastName: string;
+  inGameName: string;
+  dateOfBirth?: Date;
+  country?: string;
+  discordTag: string;
+  studentNumber: string;
+  proofOfEnrollment: string;
   team?: Team;
   teamId?: string;
   role?: string;
@@ -103,17 +110,6 @@ export type Player = {
   notes: PlayerNote[];
   createdAt: Date;
   updatedAt: Date;
-};
-
-export type playerPersonalInfo = {
-  firstName: string;
-  lastName: string;
-  inGameName: string;
-  dateOfBirth?: Date;
-  country?: string;
-  discordTag: string;
-  studentNumber: string;
-  proofOfEnrollment: string;
 };
 
 export type Match = {
@@ -147,7 +143,7 @@ export type News = {
   title: string;
   content: string;
   authorId: string;
-  author: { email: string };
+  author: { username: string };
   createdAt: Date;
   updatedAt: Date;
   publishedAt?: Date | null;

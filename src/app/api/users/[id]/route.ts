@@ -18,7 +18,7 @@ export async function PATCH(
     data: { role },
     select: {
       id: true,
-      email: true,
+      username: true,
       role: true,
     },
   });
