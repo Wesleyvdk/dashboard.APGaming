@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/lib/auth";
-
-const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
   const { username, password } = await request.json();
@@ -17,8 +15,14 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!password) {
+      return NextResponse.json(
+        { message: "Password is required" },
+        { status: 400 }
+      );
+    }
+    const userPassword = user.password || "";
+    const isPasswordValid = await bcrypt.compare(password, userPassword);
 
     if (!isPasswordValid) {
       return NextResponse.json(
