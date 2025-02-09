@@ -7,7 +7,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Role } from "@prisma/client";
+// import { Role } from "@prisma/client";
+
+export enum Role {
+  USER = "USER",
+  NEWS_WRITER = "NEWS_WRITER",
+  TEAM_MANAGER = "TEAM_MANAGER",
+  ADMIN = "ADMIN",
+}
 
 interface RoleDescription {
   role: Role;
@@ -50,10 +57,6 @@ const roleDescriptions: RoleDescription[] = [
 
 export function RolePermissions() {
   const { toast } = useToast();
-
-  if (!roleDescriptions) {
-    return <div>Loading roles...</div>;
-  }
 
   return (
     <div className="space-y-6">
