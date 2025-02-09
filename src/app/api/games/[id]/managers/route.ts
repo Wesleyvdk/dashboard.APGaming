@@ -6,6 +6,7 @@ export async function POST(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const paramsId = await params.id;
   const user = await auth();
   if (!user || user.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
