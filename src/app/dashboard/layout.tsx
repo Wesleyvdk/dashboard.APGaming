@@ -1,15 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+
 import type { DecodedToken } from "@/lib/auth";
 import type React from "react";
 
@@ -22,8 +16,6 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const [user, setUser] = useState<DecodedToken | null>(null);
-  const pathname = usePathname();
-
   useEffect(() => {
     const checkAuth = async () => {
       const res = await fetch("/api/auth/user");

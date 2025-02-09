@@ -15,6 +15,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+async function handleDelete(newsId: News["id"]) {
+  const response = await fetch(`/api/news/${newsId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 export const columns: ColumnDef<News>[] = [
   {
     accessorKey: "title",
@@ -55,14 +64,25 @@ export const columns: ColumnDef<News>[] = [
     },
   },
   {
+    accessorKey: "tags",
+    header: "Tags",
+    cell: ({ row }) => {
+      const tags = row.getValue("tags") as News["tags"];
+      return (
+        <div className="flex flex-wrap gap-1">
+          {tags.map((tag) => (
+            <Badge key={tag.id} variant="outline">
+              {tag.name}
+            </Badge>
+          ))}
+        </div>
+      );
+    },
+  },
+  {
     id: "actions",
     cell: ({ row }) => {
       const news = row.original;
-      const handleDelete = async (id: string) => {
-        const response = await fetch(`/api/news/${id}`, {
-          method: "DELETE",
-        });
-      };
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -77,15 +97,12 @@ export const columns: ColumnDef<News>[] = [
               <Link href={`/dashboard/news/edit/${news.id}`}>Edit</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Button
-                variant={"destructive"}
-                onClick={async () => {
-                  await handleDelete(news.id);
-                }}
-              >
-                Delete
-              </Button>
+            <DropdownMenuItem
+              onClick={() => {
+                handleDelete(news.id);
+              }}
+            >
+              Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

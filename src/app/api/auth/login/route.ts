@@ -6,10 +6,10 @@ import { signToken } from "@/lib/auth";
 const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
-  const { email, password } = await request.json();
+  const { username, password } = await request.json();
 
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ where: { username } });
 
     if (!user) {
       return NextResponse.json(

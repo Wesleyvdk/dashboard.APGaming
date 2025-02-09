@@ -4,6 +4,7 @@ import { getNews } from "@/lib/news";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { Button } from "@/components/ui/button";
+import { TagFilter } from "./tag-filter";
 
 export default async function NewsPage() {
   return (
@@ -23,5 +24,10 @@ export default async function NewsPage() {
 
 async function NewsList() {
   const news = await getNews();
-  return <DataTable columns={columns} data={news} />;
+  return (
+    <>
+      <TagFilter />
+      <DataTable columns={columns} data={news} />
+    </>
+  );
 }

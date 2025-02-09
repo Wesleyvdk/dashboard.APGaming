@@ -35,7 +35,7 @@ export async function getRecentActivity(): Promise<Activity[]> {
     include: {
       user: {
         select: {
-          email: true,
+          username: true,
         },
       },
     },

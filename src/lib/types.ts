@@ -1,9 +1,19 @@
 export type User = {
   id: string;
-  email: string;
+  username: string;
+  password?: string;
   role: Role;
+  status: Status;
+  invitationToken?: string;
   createdAt: Date;
   updatedAt: Date;
+  news: News[];
+  tasks: Task[];
+  createdTasks: Task[];
+  activities: Activity[];
+  teams: Team[];
+  managedGames: GameManager[];
+  playerNotes: PlayerNote[];
 };
 
 export enum Role {
@@ -11,6 +21,12 @@ export enum Role {
   NEWS_WRITER = "NEWS_WRITER",
   TEAM_MANAGER = "TEAM_MANAGER",
   ADMIN = "ADMIN",
+}
+
+export enum Status {
+  PENDING = "PENDING",
+  ACTIVE = "ACTIVE",
+  DISABLED = "DISABLED",
 }
 
 export type Task = {
@@ -22,7 +38,9 @@ export type Task = {
   dueDate?: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  assignedTo: User;
   userId: string;
+  createdBy: User;
   creatorId: string;
 };
 
@@ -60,25 +78,48 @@ export enum ActivityType {
 export type Team = {
   id: string;
   name: string;
-  game: string;
+  game: Game;
+  gameId: string;
+  managers: User[];
   players: Player[];
   matches: Match[];
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type Player = {
   id: string;
-  name: string;
-  role?: string | null;
-  teamId: string;
+  username?: string;
+  personalInfo: playerPersonalInfo;
+  team?: Team;
+  teamId?: string;
+  role?: string;
+  rank?: string;
   joinDate: Date;
-  endDate?: Date | null;
+  endDate?: Date;
+  socialLinks?: Record<string, string>;
+  stats?: PlayerStats;
+  contracts: Contract[];
+  notes: PlayerNote[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type playerPersonalInfo = {
+  firstName: string;
+  lastName: string;
+  inGameName: string;
+  dateOfBirth?: Date;
+  country?: string;
+  discordTag: string;
+  studentNumber: string;
+  proofOfEnrollment: string;
 };
 
 export type Match = {
   id: string;
   type: MatchType;
   teamId: string;
-  team: Team;
   opponent: string;
   date: Date;
   result?: string | null;
@@ -110,4 +151,62 @@ export type News = {
   createdAt: Date;
   updatedAt: Date;
   publishedAt?: Date | null;
+  tags: Tag[];
+};
+
+export type Tag = {
+  id: string;
+  name: string;
+};
+
+export type Game = {
+  id: string;
+  name: string;
+  teams: Team[];
+  managers: GameManager[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type GameManager = {
+  id: string;
+  game: Game;
+  gameId: string;
+  user: User;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PlayerStats = {
+  id: string;
+  player: Player;
+  playerId: string;
+  stats: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type Contract = {
+  id: string;
+  player: Player;
+  playerId: string;
+  startDate: Date;
+  endDate: Date;
+  terms?: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PlayerNote = {
+  id: string;
+  player: Player;
+  playerId: string;
+  author: User;
+  authorId: string;
+  content: string;
+  isPrivate: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 };

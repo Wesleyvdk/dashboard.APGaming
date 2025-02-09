@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-4">
+    <div className="w-full space-y-4">
       <h1 className="text-3xl font-bold">Dashboard Overview</h1>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

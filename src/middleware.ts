@@ -15,7 +15,6 @@ export async function middleware(request: NextRequest) {
 
   if (token) {
     const decodedToken = await verifyToken(request);
-    console.log("Decoded token:", decodedToken);
 
     if (!decodedToken && !request.nextUrl.pathname.startsWith("/login")) {
       console.log("Invalid token, redirecting to login");

@@ -10,6 +10,7 @@ export async function GET() {
           email: true,
         },
       },
+      tags: true,
     },
     orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
   });
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { title, content, isPublished } = await request.json();
+  const { title, content, isPublished, tags } = await request.json();
 
   const news = await prisma.news.create({
     data: {
@@ -30,6 +31,12 @@ export async function POST(request: Request) {
       content,
       authorId: user.userId,
       publishedAt: isPublished ? new Date() : null,
+      tags: {
+        connect: tags.map((tagId: string) => ({ id: tagId })),
+      },
+    },
+    include: {
+      tags: true,
     },
   });
 
