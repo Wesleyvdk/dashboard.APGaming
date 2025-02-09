@@ -16,7 +16,7 @@ export async function POST(
 
   const gameManager = await prisma.gameManager.create({
     data: {
-      gameId: params.id,
+      gameId: paramsId,
       userId,
     },
     include: {
