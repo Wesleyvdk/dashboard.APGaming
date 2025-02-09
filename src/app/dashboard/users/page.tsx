@@ -2,8 +2,13 @@ import { Suspense } from "react";
 import { UserList } from "@/components/user-list";
 import { InviteUserForm } from "@/components/invite-user-form";
 import { RolePermissions } from "@/components/role-permissions";
+import { useRouter } from "next/router";
 
 export default function UsersManagement() {
+  const router = useRouter();
+  if (router.isFallback) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="w-full space-y-6">
       <h1 className="text-3xl font-bold">User Management</h1>
