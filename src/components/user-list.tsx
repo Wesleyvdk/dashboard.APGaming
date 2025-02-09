@@ -34,6 +34,10 @@ export function UserList() {
     fetchUsers();
   }, []);
 
+  if (!users) {
+    return <div>Loading users...</div>;
+  }
+
   const fetchUsers = async () => {
     try {
       const response = await fetch("/api/users");
