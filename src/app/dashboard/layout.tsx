@@ -27,7 +27,7 @@ export default function DashboardLayout({
       }
     };
     checkAuth();
-  }, [router.push]);
+  }, [router]);
   return (
     <div className="flex h-screen w-full">
       <SidebarProvider>
