@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { auth, hasRole } from "@/lib/auth";
+import { Role } from "@/prisma/generated/client";
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   const paramsId = await params.id;
   const user = await auth();
-  if (!user || user.role !== "ADMIN") {
+  if (!user || !hasRole(user, Role.ADMIN)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -33,12 +35,14 @@ export async function POST(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
   const user = await auth();
-  if (!user || user.role !== "ADMIN") {
+  if (!user || !hasRole(user, Role.ADMIN)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const params = await props.params;
 
   const { userId } = await request.json();
 

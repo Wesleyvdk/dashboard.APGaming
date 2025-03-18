@@ -1,8 +1,9 @@
 export type User = {
   id: string;
   username: string;
+  email?: string;
   password?: string;
-  role: Role;
+  roles: Role[];
   status: Status;
   invitationToken?: string;
   createdAt: Date;
@@ -14,10 +15,12 @@ export type User = {
   teams: Team[];
   managedGames: GameManager[];
   playerNotes: PlayerNote[];
+  player?: Player;
 };
 
 export enum Role {
   USER = "USER",
+  PLAYER = "PLAYER",
   NEWS_WRITER = "NEWS_WRITER",
   TEAM_MANAGER = "TEAM_MANAGER",
   ADMIN = "ADMIN",
@@ -73,6 +76,12 @@ export enum ActivityType {
   TASK_CREATED = "TASK_CREATED",
   TASK_UPDATED = "TASK_UPDATED",
   USER_ROLE_CHANGED = "USER_ROLE_CHANGED",
+  DRAFT_CREATED = "DRAFT_CREATED",
+  DRAFT_UPDATED = "DRAFT_UPDATED",
+  DRAFT_PUBLISHED = "DRAFT_PUBLISHED",
+  MEDIA_UPLOADED = "MEDIA_UPLOADED",
+  PLAYER_ADDED = "PLAYER_ADDED",
+  PLAYER_UPDATED = "PLAYER_UPDATED",
 }
 
 export type Team = {
@@ -98,18 +107,21 @@ export type Player = {
   discordTag: string;
   studentNumber: string;
   proofOfEnrollment: string;
-  team?: Team;
-  teamId?: string;
+  teams?: Team[];
+  teamIds?: string[];
   role?: string;
   rank?: string;
   joinDate: Date;
   endDate?: Date;
   socialLinks?: Record<string, string>;
+  trackerLinks?: Record<string, string>;
   stats?: PlayerStats;
-  contracts: Contract[];
-  notes: PlayerNote[];
+  contracts?: Contract[];
+  notes?: PlayerNote[];
   createdAt: Date;
   updatedAt: Date;
+  user?: User;
+  userId?: string;
 };
 
 export type Match = {
@@ -206,3 +218,62 @@ export type PlayerNote = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type Event = {
+  id: string;
+  title: string;
+  description?: string | null;
+  startDate: Date;
+  endDate: Date;
+  allDay: boolean;
+  type: EventType;
+  teamId?: string | null;
+  team?: Team;
+  createdBy: User;
+  createdById: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export enum EventType {
+  MATCH = "MATCH",
+  PRACTICE = "PRACTICE",
+  TOURNAMENT = "TOURNAMENT",
+  MEETING = "MEETING",
+  OTHER = "OTHER",
+}
+
+export type Draft = {
+  id: string;
+  title: string;
+  content?: string;
+  authorId: string;
+  author: {
+    username: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+  status: DraftStatus;
+  reviewNotes?: string | null;
+  tags: { id: string; name: string }[];
+  featuredImage?: {
+    id: string;
+    url: string;
+    alt?: string;
+  };
+};
+
+export enum MediaType {
+  IMAGE = "IMAGE",
+  VIDEO = "VIDEO",
+  AUDIO = "AUDIO",
+  DOCUMENT = "DOCUMENT",
+  OTHER = "OTHER",
+}
+
+export enum DraftStatus {
+  IN_PROGRESS = "IN_PROGRESS",
+  READY_FOR_REVIEW = "READY_FOR_REVIEW",
+  NEEDS_REVISION = "NEEDS_REVISION",
+  APPROVED = "APPROVED",
+}

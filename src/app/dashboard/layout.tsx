@@ -27,11 +27,11 @@ export default function DashboardLayout({
       }
     };
     checkAuth();
-  }, [router.push]); // Added router.push to dependencies
+  }, [router.push]);
   return (
     <div className="flex h-screen w-full">
       <SidebarProvider>
-        <AppSidebar user={user} />
+        <AppSidebar userRoles={user?.roles} />
         <main className="flex w-full p-4">
           <SidebarTrigger />
           {children}

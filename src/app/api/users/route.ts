@@ -1,20 +1,33 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { auth, hasRole } from "@/lib/auth";
+import { Role } from "@/prisma/generated/client";
 
-export async function GET() {
+export async function GET(request: Request) {
   const user = await auth();
-  if (!user || user.role !== "ADMIN") {
+  if (!user || !hasRole(user, Role.ADMIN)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const users = await prisma.user.findMany({
-    select: {
-      id: true,
-      username: true,
-      role: true,
-    },
-  });
+  const { searchParams } = new URL(request.url);
+  const page = Number.parseInt(searchParams.get("page") || "1");
+  const pageSize = Number.parseInt(searchParams.get("pageSize") || "10");
+  const skip = (page - 1) * pageSize;
 
-  return NextResponse.json(users);
+  const [users, total] = await Promise.all([
+    prisma.user.findMany({
+      select: {
+        id: true,
+        username: true,
+        roles: true,
+        status: true,
+      },
+      skip,
+      take: pageSize,
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.user.count(),
+  ]);
+
+  return NextResponse.json({ users, total });
 }

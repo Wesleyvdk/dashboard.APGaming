@@ -7,10 +7,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-// import { Role } from "@prisma/client";
+// import { Role } from "@/prisma/generated/client";
 
 export enum Role {
   USER = "USER",
+  PLAYER = "PLAYER",
   NEWS_WRITER = "NEWS_WRITER",
   TEAM_MANAGER = "TEAM_MANAGER",
   ADMIN = "ADMIN",
@@ -26,7 +27,21 @@ const roleDescriptions: RoleDescription[] = [
   {
     role: Role.USER,
     description: "Basic user with limited access",
-    permissions: ["View public content", "Participate in forums"],
+    permissions: [
+      "View public content",
+      "Participate in forums",
+      "Edit profile info",
+    ],
+  },
+  {
+    role: Role.PLAYER,
+    description: "Player on a team",
+    permissions: [
+      "Access to player-specific features",
+      "View team schedules",
+      "View public content",
+      "Participate in forums",
+    ],
   },
   {
     role: Role.NEWS_WRITER,
@@ -36,6 +51,7 @@ const roleDescriptions: RoleDescription[] = [
       "Edit news",
       "View public content",
       "Participate in forums",
+      "Edit profile info",
     ],
   },
   {
@@ -46,6 +62,7 @@ const roleDescriptions: RoleDescription[] = [
       "Create and edit schedules",
       "View public content",
       "Participate in forums",
+      "Edit profile info",
     ],
   },
   {

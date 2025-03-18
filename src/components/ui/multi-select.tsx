@@ -30,6 +30,7 @@ type MultiSelectProps = {
   onChange: (selected: string[]) => void;
   placeholder?: string;
   allowCreate?: boolean;
+  disabled?: boolean;
 };
 
 export function MultiSelect({
@@ -38,6 +39,7 @@ export function MultiSelect({
   onChange,
   placeholder,
   allowCreate = false,
+  disabled = false,
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
@@ -60,40 +62,59 @@ export function MultiSelect({
   };
 
   const selectables = allowCreate
-    ? [...options, { label: `Create "${inputValue}"`, value: inputValue }]
+    ? [
+        ...options,
+        { label: `Create "${inputValue}"`, value: inputValue },
+      ].filter(
+        (option) =>
+          inputValue &&
+          !options.some(
+            (o) => o.label.toLowerCase() === inputValue.toLowerCase()
+          )
+      )
     : options;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={disabled ? undefined : setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className={cn(
+            "w-full justify-between",
+            disabled && "opacity-50 cursor-not-allowed"
+          )}
+          disabled={disabled}
         >
           <div className="flex gap-1 flex-wrap">
-            {selected.map((item) => (
-              <Badge variant="secondary" key={item} className="mr-1 mb-1">
-                {options.find((option) => option.value === item)?.label || item}
-                <button
-                  className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleUnselect(item);
-                    }
-                  }}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  onClick={() => handleUnselect(item)}
-                >
-                  <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                </button>
-              </Badge>
-            ))}
-            {selected.length === 0 && <span>{placeholder}</span>}
+            {selected.length > 0 ? (
+              selected.map((item) => (
+                <Badge variant="secondary" key={item} className="mr-1 mb-1">
+                  {options.find((option) => option.value === item)?.label ||
+                    item}
+                  {!disabled && (
+                    <button
+                      className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleUnselect(item);
+                        }
+                      }}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      onClick={() => handleUnselect(item)}
+                    >
+                      <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                    </button>
+                  )}
+                </Badge>
+              ))
+            ) : (
+              <span className="text-muted-foreground">{placeholder}</span>
+            )}
           </div>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -107,7 +128,7 @@ export function MultiSelect({
           />
           <CommandList>
             <CommandEmpty>
-              {allowCreate && (
+              {allowCreate && inputValue && (
                 <Button
                   variant="ghost"
                   className="w-full justify-start"

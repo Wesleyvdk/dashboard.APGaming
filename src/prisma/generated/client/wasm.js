@@ -120,8 +120,9 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   username: 'username',
+  email: 'email',
   password: 'password',
-  role: 'role',
+  roles: 'roles',
   status: 'status',
   invitationToken: 'invitationToken',
   createdAt: 'createdAt',
@@ -181,14 +182,15 @@ exports.Prisma.PlayerScalarFieldEnum = {
   username: 'username',
   dateOfBirth: 'dateOfBirth',
   country: 'country',
-  teamId: 'teamId',
   role: 'role',
   rank: 'rank',
   joinDate: 'joinDate',
   endDate: 'endDate',
   socialLinks: 'socialLinks',
+  trackerLinks: 'trackerLinks',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  userId: 'userId'
 };
 
 exports.Prisma.PlayerStatsScalarFieldEnum = {
@@ -247,12 +249,61 @@ exports.Prisma.NewsScalarFieldEnum = {
   authorId: 'authorId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  publishedAt: 'publishedAt'
+  publishedAt: 'publishedAt',
+  featuredImageId: 'featuredImageId'
 };
 
 exports.Prisma.TagScalarFieldEnum = {
   id: 'id',
   name: 'name'
+};
+
+exports.Prisma.EventScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  allDay: 'allDay',
+  type: 'type',
+  teamId: 'teamId',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DraftScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  content: 'content',
+  authorId: 'authorId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  featuredImageId: 'featuredImageId',
+  status: 'status',
+  reviewNotes: 'reviewNotes',
+  reviewerId: 'reviewerId'
+};
+
+exports.Prisma.MediaItemScalarFieldEnum = {
+  id: 'id',
+  filename: 'filename',
+  originalFilename: 'originalFilename',
+  path: 'path',
+  url: 'url',
+  type: 'type',
+  size: 'size',
+  mimeType: 'mimeType',
+  width: 'width',
+  height: 'height',
+  duration: 'duration',
+  alt: 'alt',
+  caption: 'caption',
+  uploadedById: 'uploadedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  tags: 'tags',
+  folder: 'folder'
 };
 
 exports.Prisma.SortOrder = {
@@ -284,17 +335,18 @@ exports.Prisma.JsonNullValueFilter = {
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
-exports.Role = exports.$Enums.Role = {
-  USER: 'USER',
-  NEWS_WRITER: 'NEWS_WRITER',
-  TEAM_MANAGER: 'TEAM_MANAGER',
-  ADMIN: 'ADMIN'
-};
-
 exports.Status = exports.$Enums.Status = {
   PENDING: 'PENDING',
   ACTIVE: 'ACTIVE',
   DISABLED: 'DISABLED'
+};
+
+exports.Role = exports.$Enums.Role = {
+  USER: 'USER',
+  PLAYER: 'PLAYER',
+  NEWS_WRITER: 'NEWS_WRITER',
+  TEAM_MANAGER: 'TEAM_MANAGER',
+  ADMIN: 'ADMIN'
 };
 
 exports.TaskStatus = exports.$Enums.TaskStatus = {
@@ -316,13 +368,42 @@ exports.ActivityType = exports.$Enums.ActivityType = {
   ROSTER_CHANGED: 'ROSTER_CHANGED',
   TASK_CREATED: 'TASK_CREATED',
   TASK_UPDATED: 'TASK_UPDATED',
-  USER_ROLE_CHANGED: 'USER_ROLE_CHANGED'
+  USER_ROLE_CHANGED: 'USER_ROLE_CHANGED',
+  DRAFT_CREATED: 'DRAFT_CREATED',
+  DRAFT_UPDATED: 'DRAFT_UPDATED',
+  DRAFT_PUBLISHED: 'DRAFT_PUBLISHED',
+  MEDIA_UPLOADED: 'MEDIA_UPLOADED',
+  PLAYER_ADDED: 'PLAYER_ADDED',
+  PLAYER_UPDATED: 'PLAYER_UPDATED'
 };
 
 exports.MatchType = exports.$Enums.MatchType = {
   TOURNAMENT: 'TOURNAMENT',
   SCRIM: 'SCRIM',
   OFFICIAL: 'OFFICIAL'
+};
+
+exports.EventType = exports.$Enums.EventType = {
+  MATCH: 'MATCH',
+  PRACTICE: 'PRACTICE',
+  TOURNAMENT: 'TOURNAMENT',
+  MEETING: 'MEETING',
+  OTHER: 'OTHER'
+};
+
+exports.DraftStatus = exports.$Enums.DraftStatus = {
+  IN_PROGRESS: 'IN_PROGRESS',
+  READY_FOR_REVIEW: 'READY_FOR_REVIEW',
+  NEEDS_REVISION: 'NEEDS_REVISION',
+  APPROVED: 'APPROVED'
+};
+
+exports.MediaType = exports.$Enums.MediaType = {
+  IMAGE: 'IMAGE',
+  VIDEO: 'VIDEO',
+  AUDIO: 'AUDIO',
+  DOCUMENT: 'DOCUMENT',
+  OTHER: 'OTHER'
 };
 
 exports.Prisma.ModelName = {
@@ -339,7 +420,10 @@ exports.Prisma.ModelName = {
   Match: 'Match',
   Announcement: 'Announcement',
   News: 'News',
-  Tag: 'Tag'
+  Tag: 'Tag',
+  Event: 'Event',
+  Draft: 'Draft',
+  MediaItem: 'MediaItem'
 };
 
 /**

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "AP Gaming Dashboard",
-  description: "Developed by ehzgodd",
+  description: "AP Gaming Dashboard",
 };
 
 export default function RootLayout({

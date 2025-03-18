@@ -11,27 +11,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Existing models...
 model User {
-  id            String         @id @default(cuid())
+  id            String        @id @default(cuid())
   username      String        @unique
+  email         String?        @unique
   password      String?
-  role          Role          @default(USER)
+  roles           Role[]    @default([USER])
   status        Status        @default(PENDING)
   invitationToken String?     @unique
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   news          News[]
+  drafts        Draft[]
   tasks         Task[]        @relation("AssignedTasks")
   createdTasks  Task[]        @relation("CreatedTasks")
   activities    Activity[]
   teams         Team[]        @relation("TeamManagers")
   managedGames GameManager[]
   playerNotes  PlayerNote[]
+  events    Event[]  @relation("UserEvents")
+  mediaItems      MediaItem[]
+  player          Player? 
 }
 
 enum Role {
   USER
+  PLAYER
   NEWS_WRITER
   TEAM_MANAGER
   ADMIN
@@ -89,6 +94,12 @@ enum ActivityType {
   TASK_CREATED
   TASK_UPDATED
   USER_ROLE_CHANGED
+  DRAFT_CREATED
+  DRAFT_UPDATED
+  DRAFT_PUBLISHED
+  MEDIA_UPLOADED
+  PLAYER_ADDED
+  PLAYER_UPDATED
 }
 
 model Team {
@@ -97,10 +108,11 @@ model Team {
   game        Game      @relation(fields: [gameId], references: [id])
   gameId      String
   managers    User[]    @relation("TeamManagers")
-  players     Player[]
+  players     Player[]  @relation("PlayerTeams")
   matches     Match[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  events  Event[]  @relation("TeamEvents")
 }
 
 model Game {
@@ -132,18 +144,20 @@ model Player {
   username      String?   @unique
   dateOfBirth   DateTime?
   country       String?
-  team          Team?     @relation(fields: [teamId], references: [id])
-  teamId        String?
+  teams          Team[]     @relation("PlayerTeams")
   role          String?
   rank          String?
   joinDate      DateTime  @default(now())
   endDate       DateTime?
-  socialLinks   Json?     // Store social media links
+  socialLinks   Json?
+  trackerLinks  Json?
   stats         PlayerStats?
   contracts     Contract[]
   notes         PlayerNote[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  user          User?     @relation(fields: [userId], references: [id])
+  userId        String?   @unique
 }
 
 model PlayerStats {
@@ -216,10 +230,95 @@ model News {
   updatedAt   DateTime  @updatedAt
   publishedAt DateTime?
   tags        Tag[]
+  featuredImage MediaItem? @relation(fields: [featuredImageId], references: [id])
+  featuredImageId String? @unique
+  mediaItems  MediaItem[] @relation("NewsMedia")
 }
 
 model Tag {
   id    String @id @default(cuid())
   name  String @unique
   news  News[]
+  drafts Draft[]
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  allDay      Boolean   @default(false)
+  type        EventType
+  team        Team?     @relation(fields: [teamId], references: [id], name: "TeamEvents")
+  teamId      String?
+  createdBy   User      @relation(fields: [createdById], references: [id], name: "UserEvents")
+  createdById String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+enum EventType {
+  MATCH
+  PRACTICE
+  TOURNAMENT
+  MEETING
+  OTHER
+}
+
+model Draft {
+  id          String    @id @default(cuid())
+  title       String
+  content     String
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tags        Tag[]
+  featuredImage MediaItem? @relation(fields: [featuredImageId], references: [id])
+  featuredImageId String? @unique
+  mediaItems  MediaItem[] @relation("DraftMedia")
+  status      DraftStatus @default(IN_PROGRESS)
+  reviewNotes String?
+  reviewerId  String?
+}
+
+enum DraftStatus {
+  IN_PROGRESS
+  READY_FOR_REVIEW
+  NEEDS_REVISION
+  APPROVED
+}
+
+model MediaItem {
+  id          String    @id @default(cuid())
+  filename    String
+  originalFilename String
+  path        String
+  url         String
+  type        MediaType
+  size        Int
+  mimeType    String
+  width       Int?
+  height      Int?
+  duration    Float?    // For videos/audio in seconds
+  alt         String?
+  caption     String?
+  uploadedBy  User      @relation(fields: [uploadedById], references: [id])
+  uploadedById String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tags        String[]
+  folder      String?
+  featuredInNews News[] @relation("NewsMedia")
+  featuredAsNewsImage News?
+  featuredInDrafts Draft[] @relation("DraftMedia")
+  featuredAsDraftImage Draft?
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+  OTHER
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifyToken } from "@/lib/auth";
+import { verifyToken, hasAnyRole } from "@/lib/auth";
+import { Role } from "@/prisma/generated/client";
 
 export async function middleware(request: NextRequest) {
   console.log("Middleware called for path:", request.nextUrl.pathname);
@@ -24,15 +25,15 @@ export async function middleware(request: NextRequest) {
     const requestedPath = request.nextUrl.pathname;
 
     // Define role-based access rules
-    const roleAccess: { [key: string]: string[] } = {
-      "/dashboard/news": ["ADMIN", "NEWS_WRITER"],
-      "/dashboard/players": ["ADMIN", "TEAM_MANAGER"],
-      "/dashboard/users": ["ADMIN"],
+    const roleAccess: { [key: string]: Role[] } = {
+      "/dashboard/news": [Role.ADMIN, Role.NEWS_WRITER],
+      "/dashboard/players": [Role.ADMIN, Role.TEAM_MANAGER],
+      "/dashboard/users": [Role.ADMIN],
     };
 
-    const allowedRoles = roleAccess[requestedPath];
+    const requiredRoles = roleAccess[requestedPath];
 
-    if (allowedRoles && !allowedRoles.includes(decodedToken!.role)) {
+    if (requiredRoles && !hasAnyRole(decodedToken, requiredRoles)) {
       console.log("Unauthorized access, redirecting to dashboard");
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }

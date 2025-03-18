@@ -4,8 +4,9 @@ import { auth } from "@/lib/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   const getParams = await params;
   const news = await prisma.news.findUnique({
     where: { id: getParams.id },
@@ -28,8 +29,9 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   const putParams = await params;
   const user = await auth();
   if (!user) {
@@ -58,9 +60,9 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
-  const deleteParams = await params;
+  const deleteParams = await props.params;
   const user = await auth();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

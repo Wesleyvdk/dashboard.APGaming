@@ -15,13 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { MultiSelect } from "@/components/ui/multi-select";
 import { useToast } from "@/hooks/use-toast";
 import { Role } from "@/lib/types";
 import {
@@ -34,7 +28,9 @@ import {
 
 const inviteSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
-  role: z.nativeEnum(Role),
+  roles: z
+    .array(z.nativeEnum(Role))
+    .min(1, "At least one role must be selected"),
 });
 
 export function InviteUserForm() {
@@ -45,7 +41,7 @@ export function InviteUserForm() {
   const form = useForm<z.infer<typeof inviteSchema>>({
     resolver: zodResolver(inviteSchema),
     defaultValues: {
-      role: Role.USER,
+      roles: [Role.USER],
     },
   });
 
@@ -120,27 +116,21 @@ export function InviteUserForm() {
             />
             <FormField
               control={form.control}
-              name="role"
+              name="roles"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a role" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {Object.values(Role).map((role) => (
-                        <SelectItem key={role} value={role}>
-                          {role}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormLabel>Roles</FormLabel>
+                  <FormControl>
+                    <MultiSelect
+                      options={Object.values(Role).map((role) => ({
+                        label: role,
+                        value: role,
+                      }))}
+                      selected={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select roles"
+                    />
+                  </FormControl>
                   <FormDescription>
                     The role you want to assign to the user.
                   </FormDescription>

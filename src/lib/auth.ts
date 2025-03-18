@@ -1,10 +1,11 @@
 import type { NextRequest } from "next/server";
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
+import type { Role } from "@prisma/client";
 
 export interface DecodedToken {
   userId: string;
-  role: string;
+  roles: Role[];
 }
 
 // Create a Uint8Array of the JWT secret for use with jose
@@ -40,7 +41,7 @@ export async function verifyToken(
     const verified = await jwtVerify(token, getJWTSecretKey());
     const decodedToken = {
       userId: verified.payload.userId as string,
-      role: verified.payload.role as string,
+      roles: verified.payload.roles as Role[],
     };
     return decodedToken;
   } catch (error) {
@@ -61,11 +62,21 @@ export async function auth(): Promise<DecodedToken | null> {
     const verified = await jwtVerify(token, getJWTSecretKey());
     const decodedToken = {
       userId: verified.payload.userId as string,
-      role: verified.payload.role as string,
+      roles: verified.payload.roles as Role[],
     };
     return decodedToken;
   } catch (error) {
     console.error("Auth error:", error);
     return null;
   }
+}
+
+export function hasRole(user: DecodedToken | null, role: Role): boolean {
+  if (!user) return false;
+  return user.roles.includes(role);
+}
+
+export function hasAnyRole(user: DecodedToken | null, roles: Role[]): boolean {
+  if (!user) return false;
+  return user.roles.some((role) => roles.includes(role));
 }

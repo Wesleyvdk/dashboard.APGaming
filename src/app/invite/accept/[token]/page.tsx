@@ -19,6 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const passwordSchema = z
   .object({
+    email: z.string().email("Invalid email format"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
   })
@@ -39,6 +40,7 @@ export default function AcceptInvitePage({
   const form = useForm<z.infer<typeof passwordSchema>>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
+      email: "",
       password: "",
       confirmPassword: "",
     },
@@ -101,11 +103,23 @@ export default function AcceptInvitePage({
     <div className="max-w-md mx-auto mt-8">
       <h1 className="text-2xl font-bold mb-4">Accept Invitation</h1>
       <p className="mb-4">
-        Welcome, {username}! Please set your password to complete your
+        Welcome, {username}! Please set your email and password to complete your
         registration.
       </p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="password"

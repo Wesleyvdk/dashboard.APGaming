@@ -5,7 +5,7 @@ export async function getPlayerById(id: string): Promise<Player | null> {
   return prisma.player.findUnique({
     where: { id },
     include: {
-      team: true,
+      teams: true,
       stats: true,
       contracts: {
         orderBy: {

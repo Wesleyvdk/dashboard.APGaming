@@ -29,7 +29,7 @@ export function PlayerContracts({ player }: PlayerContractsProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {player.contracts.map((contract) => (
+            {player.contracts?.map((contract) => (
               <TableRow key={contract.id}>
                 <TableCell>
                   {new Date(contract.startDate).toLocaleDateString()}

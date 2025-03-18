@@ -23,9 +23,9 @@ export async function POST(request: Request) {
     data: {
       password: hashedPassword,
       status: "ACTIVE",
-      invitationToken: undefined,
+      invitationToken: null,
     },
   });
 
-  return NextResponse.json({ message: "Account created successfully" });
+  return NextResponse.json({ message: "Account activated successfully" });
 }
