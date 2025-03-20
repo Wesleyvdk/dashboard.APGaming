@@ -30,13 +30,13 @@ export async function POST(request: NextRequest) {
     });
 
     // Don't reveal if user exists or not for security
-    if (!user || user.status === "DISABLED") {
+    if (!user || !user.email || user.status === "DISABLED") {
       // We still return success to prevent email enumeration attacks
       return NextResponse.json({ success: true });
     }
 
     // Generate reset token (valid for 1 hour)
-    const resetToken = signToken({
+    const resetToken = await signToken({
       userId: user.id,
       purpose: "password-reset",
     });
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
     // Send password reset email
     const emailSent = await sendEmail({
-      to: user.email,
+      to: user.email as string,
       subject: "Reset Your AP Gaming Password",
       template: "RESET_PASSWORD",
       data: {

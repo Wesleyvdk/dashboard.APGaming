@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
   try {
     // Parse and validate request body
     const body = await request.json();
-    const validationResult = resetPasswordSchema.safeParse(body);
+    const validationResult = await resetPasswordSchema.safeParse(body);
 
     if (!validationResult.success) {
       return NextResponse.json(
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     const { token, password } = validationResult.data;
 
     // Verify token
-    const payload = verifyToken(token);
+    const payload = await verifyToken(token);
 
     if (!payload || payload.purpose !== "password-reset") {
       return NextResponse.json(
