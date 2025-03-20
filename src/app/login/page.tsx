@@ -1,7 +1,8 @@
 "use client";
-
+import type React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -75,6 +76,14 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+          </div>
+          <div className="text-sm text-right">
+            <Link
+              href="/forgot-password"
+              className="text-blue-600 hover:text-blue-500"
+            >
+              Forgot password?
+            </Link>
           </div>
 
           {error && <div className="text-red-500 text-sm mt-2">{error}</div>}

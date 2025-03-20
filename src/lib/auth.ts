@@ -6,6 +6,9 @@ import type { Role } from "@prisma/client";
 export interface DecodedToken {
   userId: string;
   roles: Role[];
+  purpose?: string;
+  iat?: number;
+  exp?: number;
 }
 
 // Create a Uint8Array of the JWT secret for use with jose
