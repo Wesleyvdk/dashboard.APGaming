@@ -1,6 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma";
-import { auth, hasRole } from "@/lib/auth";
+import {
+  auth, hasRole
+} from "@/lib/auth";
 import { Role } from "@/prisma/generated/client";
 
 export async function GET(

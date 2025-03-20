@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     },
   });
 
-  const invitationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/invite/accept/${invitationToken}`;
+  const invitationLink = `https://${process.env.NEXT_PUBLIC_BASE_URL}/invite/accept/${invitationToken}`;
 
   return NextResponse.json({ invitationLink });
 }

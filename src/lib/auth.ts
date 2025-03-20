@@ -6,6 +6,9 @@ import type { Role } from "@prisma/client";
 export interface DecodedToken {
   userId: string;
   roles: Role[];
+  purpose?: string;
+  iat?: number;
+  exp?: number;
 }
 
 // Create a Uint8Array of the JWT secret for use with jose
@@ -29,20 +32,29 @@ export async function signToken(payload: any) {
 }
 
 export async function verifyToken(
-  request: NextRequest
+  tokenOrRequest: string | NextRequest
 ): Promise<DecodedToken | null> {
-  const token = request.cookies.get("token")?.value;
+  let token: string | undefined;
+  if (typeof tokenOrRequest === 'string') {
+    token = tokenOrRequest;
+  } else {
+    token = tokenOrRequest.cookies.get("token")?.value;
+  }
 
   if (!token) {
     return null;
   }
+
+  console.log(await jwtVerify(token, getJWTSecretKey()));
 
   try {
     const verified = await jwtVerify(token, getJWTSecretKey());
     const decodedToken = {
       userId: verified.payload.userId as string,
       roles: verified.payload.roles as Role[],
+      purpose: verified.payload.purpose as string,
     };
+
     return decodedToken;
   } catch (error) {
     console.error("Token verification error:", error);
