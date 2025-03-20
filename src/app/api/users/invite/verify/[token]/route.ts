@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { token: string } }
 ) {
   const user = await prisma.user.findUnique({
-    where: { invitationToken: params.token },
+    where: { invitationToken: await params.token },
     select: { username: true },
   });
 

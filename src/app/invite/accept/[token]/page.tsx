@@ -73,6 +73,7 @@ export default function AcceptInvitePage({
         },
         body: JSON.stringify({
           token: params.token,
+          email: values.email,
           password: values.password,
         }),
       });
