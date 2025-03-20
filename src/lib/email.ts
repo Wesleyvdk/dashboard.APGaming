@@ -1,9 +1,10 @@
 import { isResendConfigured, resend } from "./resend";
 import { render } from "@react-email/render";
 import ResetPasswordEmail from "@/emails/reset-password-email";
+import WelcomeEmail from "@/emails/welcome-email"
 import nodemailer from "nodemailer";
 
-type EmailTemplate = "RESET_PASSWORD";
+type EmailTemplate = "RESET_PASSWORD" | "WELCOME"
 
 interface SendEmailOptions {
   to: string;
@@ -49,6 +50,13 @@ async function sendWithResend({
           userName: data.userName,
         })
       );
+    } else if (template === "WELCOME") {
+      html = await render(
+        WelcomeEmail({
+          userName: data.userName,
+          loginLink: data.loginLink,
+        }),
+      )
     }
 
     const { error } = await resend.emails.send({

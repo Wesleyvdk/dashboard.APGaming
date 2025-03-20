@@ -44,9 +44,6 @@ export async function verifyToken(
   if (!token) {
     return null;
   }
-
-  console.log(await jwtVerify(token, getJWTSecretKey()));
-
   try {
     const verified = await jwtVerify(token, getJWTSecretKey());
     const decodedToken = {

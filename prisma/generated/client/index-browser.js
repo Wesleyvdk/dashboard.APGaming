@@ -346,6 +346,7 @@ exports.Role = exports.$Enums.Role = {
   PLAYER: 'PLAYER',
   NEWS_WRITER: 'NEWS_WRITER',
   TEAM_MANAGER: 'TEAM_MANAGER',
+  ADVISORY_BOARD: 'ADVISORY_BOARD',
   ADMIN: 'ADMIN'
 };
 
