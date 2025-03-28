@@ -28,7 +28,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MediaPicker } from "@/components/media-picker";
+import { MediaPicker } from "@/components/media/media-picker";
 import { Draft, MediaType } from "@/lib/types";
 import { DraftStatus } from "@/prisma/generated/client";
 import { Textarea } from "@/components/ui/textarea";

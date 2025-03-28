@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { UserList } from "@/components/user-list";
-import { InviteUserForm } from "@/components/invite-user-form";
+import { UserList } from "@/components/users/user-list";
+import { InviteUserForm } from "@/components/users/invite-user-form";
 import { RolePermissions } from "@/components/role-permissions";
 
 export default function UsersManagement() {

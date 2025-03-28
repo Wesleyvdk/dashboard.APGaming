@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, Users, User, Edit, Trash } from "lucide-react";
@@ -25,7 +24,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 interface Event {
@@ -60,7 +58,6 @@ export function ViewEventModal({
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const { toast } = useToast();
-  const router = useRouter();
 
   useEffect(() => {
     if (isOpen && eventId) {
@@ -79,6 +76,7 @@ export function ViewEventModal({
         throw new Error("Failed to fetch event");
       }
     } catch (error) {
+      console.error("Error fetching event:", error);
       toast({
         title: "Error",
         description: "Failed to load event details. Please try again.",
@@ -110,6 +108,7 @@ export function ViewEventModal({
         throw new Error("Failed to delete event");
       }
     } catch (error) {
+      console.error("Error deleting event:", error);
       toast({
         title: "Error",
         description: "Failed to delete event. Please try again.",
@@ -139,6 +138,7 @@ export function ViewEventModal({
   if (!event && isLoading) {
     return (
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <DialogTitle>Loading...</DialogTitle>
         <DialogContent>
           <div className="flex justify-center items-center h-40">
             <p>Loading event details...</p>
@@ -235,11 +235,12 @@ export function ViewEventModal({
             <Button variant="outline" onClick={() => onEditClick(event)}>
               <Edit className="mr-2 h-4 w-4" /> Edit
             </Button>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive">
-                <Trash className="mr-2 h-4 w-4" /> Delete
-              </Button>
-            </AlertDialogTrigger>
+            <Button
+              variant="destructive"
+              onClick={() => setDeleteDialogOpen(true)}
+            >
+              <Trash className="mr-2 h-4 w-4" /> Delete
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

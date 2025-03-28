@@ -1,20 +1,8 @@
 "use client";
 
+import type React from "react";
+
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -22,87 +10,163 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
-import Link from "next/link";
+import { ProfilePictureUpload } from "@/components/profile/profile-picture-upload";
+import { Loader2, CalendarIcon, AlertCircle } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Textarea } from "@/components/ui/textarea";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { countries } from "./data/countries";
 
-// Update the form schema to include all fields
-const profileFormSchema = z
-  .object({
-    username: z
-      .string()
-      .min(3, "Username must be at least 3 characters")
-      .optional(),
-    email: z.string().email("Invalid email address").optional(),
-    currentPassword: z.string().min(1, "Current password is required"),
-    newPassword: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .optional(),
-    confirmPassword: z.string().optional(),
-  })
-  .refine(
-    (data) => {
-      if (data.newPassword && !data.confirmPassword) return false;
-      if (!data.newPassword && data.confirmPassword) return false;
-      if (
-        data.newPassword &&
-        data.confirmPassword &&
-        data.newPassword !== data.confirmPassword
-      )
-        return false;
-      return true;
-    },
-    {
-      message: "Passwords do not match",
-      path: ["confirmPassword"],
-    }
-  );
+interface UserProfile {
+  id: string;
+  email: string;
+  username: string;
+  profilePicture: string | null;
+  roles: string[];
+  bio?: string | null;
+  player?: PlayerProfile | null;
+}
+
+interface PlayerProfile {
+  id: string;
+  firstName: string;
+  lastName: string;
+  inGameName: string;
+  dateOfBirth?: string | null;
+  country?: string | null;
+  role?: string | null;
+  rank?: string | null;
+  socialLinks?: Record<string, string> | null;
+  trackerLinks?: Record<string, string> | null;
+}
+
+interface ProfileFormData {
+  // User data
+  email: string;
+  username: string;
+  bio: string;
+
+  // Player data
+  firstName: string;
+  lastName: string;
+  inGameName: string;
+  dateOfBirth: Date | null;
+  country: string;
+  gameRole: string;
+  rank: string;
+
+  // Social links
+  discord: string;
+  twitter: string;
+  instagram: string;
+  youtube: string;
+  twitch: string;
+
+  // Tracker links
+  trackerGG: string;
+  steamProfile: string;
+  epicGames: string;
+  battleNet: string;
+  riotGames: string;
+}
 
 export default function ProfilePage() {
-  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const { toast } = useToast();
-
-  const form = useForm<z.infer<typeof profileFormSchema>>({
-    resolver: zodResolver(profileFormSchema),
-    defaultValues: {
-      username: "",
-      email: "",
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    },
+  const [activeTab, setActiveTab] = useState("personal");
+  const [formData, setFormData] = useState<ProfileFormData>({
+    email: "",
+    username: "",
+    bio: "",
+    firstName: "",
+    lastName: "",
+    inGameName: "",
+    dateOfBirth: null,
+    country: "",
+    gameRole: "",
+    rank: "",
+    discord: "",
+    twitter: "",
+    instagram: "",
+    youtube: "",
+    twitch: "",
+    trackerGG: "",
+    steamProfile: "",
+    epicGames: "",
+    battleNet: "",
+    riotGames: "",
   });
 
+  const { toast } = useToast();
+  const isPlayer = profile?.roles?.includes("PLAYER");
+
   useEffect(() => {
-    fetchUserProfile();
+    fetchProfile();
   }, []);
 
-  const fetchUserProfile = async () => {
+  const fetchProfile = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/auth/user");
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-        form.reset({
-          username: userData.username || "",
-          email: userData.email || "",
-          currentPassword: "",
-          newPassword: "",
-          confirmPassword: "",
-        });
-      }
+      const response = await fetch("/api/users/profile");
+      if (!response.ok) throw new Error("Failed to fetch profile");
+
+      const data = await response.json();
+      setProfile(data);
+
+      // Initialize form data from both user and player data
+      const socialLinks = data.player?.socialLinks || {};
+      const trackerLinks = data.player?.trackerLinks || {};
+
+      setFormData({
+        email: data.email || "",
+        username: data.username || "",
+        bio: data.bio || "",
+        firstName: data.player?.firstName || "",
+        lastName: data.player?.lastName || "",
+        inGameName: data.player?.inGameName || "",
+        dateOfBirth: data.player?.dateOfBirth
+          ? new Date(data.player.dateOfBirth)
+          : null,
+        country: data.player?.country || "",
+        gameRole: data.player?.role || "",
+        rank: data.player?.rank || "",
+        discord: socialLinks.discord || "",
+        twitter: socialLinks.twitter || "",
+        instagram: socialLinks.instagram || "",
+        youtube: socialLinks.youtube || "",
+        twitch: socialLinks.twitch || "",
+        trackerGG: trackerLinks.trackerGG || "",
+        steamProfile: trackerLinks.steam || "",
+        epicGames: trackerLinks.epic || "",
+        battleNet: trackerLinks.battleNet || "",
+        riotGames: trackerLinks.riot || "",
+      });
     } catch (error) {
-      console.error("Error fetching user profile:", error);
+      console.error("Failed to fetch profile:", error);
       toast({
         title: "Error",
-        description: "Failed to load user profile. Please try again.",
+        description: "Failed to load profile",
         variant: "destructive",
       });
     } finally {
@@ -110,41 +174,97 @@ export default function ProfilePage() {
     }
   };
 
-  // Update the onSubmit function to properly handle the form submission
-  const onSubmit = async (values: z.infer<typeof profileFormSchema>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleDateChange = (date: Date | undefined) => {
+    setFormData((prev) => ({
+      ...prev,
+      dateOfBirth: date || null,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsSaving(true);
+
     try {
-      const response = await fetch("/api/auth/profile", {
-        method: "PUT",
+      // Prepare the data for submission
+      const socialLinks = {
+        discord: formData.discord,
+        twitter: formData.twitter,
+        instagram: formData.instagram,
+        youtube: formData.youtube,
+        twitch: formData.twitch,
+      };
+
+      const trackerLinks = {
+        trackerGG: formData.trackerGG,
+        steam: formData.steamProfile,
+        epic: formData.epicGames,
+        battleNet: formData.battleNet,
+        riot: formData.riotGames,
+      };
+
+      const submissionData = {
+        // User data
+        email: formData.email,
+        username: formData.username,
+        bio: formData.bio,
+
+        // Player data
+        player: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          inGameName: formData.inGameName,
+          dateOfBirth: formData.dateOfBirth,
+          country: formData.country,
+          role: formData.gameRole,
+          rank: formData.rank,
+          socialLinks,
+          trackerLinks,
+        },
+      };
+
+      const response = await fetch("/api/users/profile", {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(submissionData),
       });
 
-      if (response.ok) {
-        toast({
-          title: "Success",
-          description: "Your profile has been updated.",
-        });
-        fetchUserProfile();
-        form.reset({
-          ...form.getValues(),
-          currentPassword: "",
-          newPassword: "",
-          confirmPassword: "",
-        });
-      } else {
-        const data = await response.json();
-        throw new Error(data.message || "Failed to update profile");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update profile");
       }
+
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been updated successfully",
+      });
+
+      // Refresh profile data
+      fetchProfile();
     } catch (error) {
       toast({
         title: "Error",
         description:
-          error instanceof Error
-            ? error.message
-            : "Failed to update profile. Please try again.",
+          error instanceof Error ? error.message : "Failed to update profile",
         variant: "destructive",
       });
     } finally {
@@ -152,382 +272,406 @@ export default function ProfilePage() {
     }
   };
 
+  const handleProfilePictureUpdate = (url: string) => {
+    if (profile) {
+      setProfile({
+        ...profile,
+        profilePicture: url,
+      });
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-full">
+      <div className="container py-6 flex justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">My Profile</h1>
-      </div>
+    <div className="container py-6 space-y-6">
+      <h1 className="text-3xl font-bold">Profile Settings</h1>
+
+      {!isPlayer && (
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Player profile not linked</AlertTitle>
+          <AlertDescription>
+            Your account is not linked to a player profile. Some fields will be
+            unavailable until an admin links your account to a player.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-1">
+        <div>
           <Card>
-            <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
-              <CardDescription>
-                Your personal information and account details
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center space-y-4">
-              <Avatar className="h-24 w-24">
-                <AvatarImage
-                  src={`https://api.dicebear.com/7.x/initials/svg?seed=${
-                    user?.username || user?.email
-                  }`}
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center space-y-4">
+                <ProfilePictureUpload
+                  currentImageUrl={profile?.profilePicture || null}
+                  onSuccess={handleProfilePictureUpdate}
                 />
-                <AvatarFallback>
-                  {getInitials(user?.username || user?.email)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="text-center">
-                <h3 className="text-lg font-medium">
-                  {user?.username || user?.email}
-                </h3>
-                <p className="text-sm text-muted-foreground">{user?.email}</p>
-              </div>
-              <div className="flex flex-wrap gap-2 justify-center">
-                {user?.roles?.map((role: string) => (
-                  <Badge key={role}>{role}</Badge>
-                ))}
-                <Badge
-                  variant={user?.status === "ACTIVE" ? "success" : "secondary"}
-                >
-                  {user?.status}
-                </Badge>
-              </div>
-              <div className="text-sm text-muted-foreground text-center">
-                <p>
-                  Member since: {new Date(user?.createdAt).toLocaleDateString()}
-                </p>
-                {user?.player && (
-                  <p className="mt-1">Player: {user.player.inGameName}</p>
-                )}
+                <div className="text-center">
+                  <h2 className="text-xl font-semibold">
+                    {profile?.player
+                      ? `${profile.player.firstName} ${profile.player.lastName}`
+                      : profile?.username}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    {profile?.player?.inGameName &&
+                      `"${profile.player.inGameName}"`}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {profile?.roles?.join(", ")}
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
         <div className="md:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Edit Profile</CardTitle>
-              <CardDescription>
-                Update your account information and change your password
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="account">
-                <TabsList className="mb-4">
-                  <TabsTrigger value="account">Account</TabsTrigger>
-                  <TabsTrigger value="password">Password</TabsTrigger>
-                  {user?.player && (
-                    <TabsTrigger value="player">Player Info</TabsTrigger>
-                  )}
-                </TabsList>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="personal">Personal Info</TabsTrigger>
+              <TabsTrigger value="gaming">Gaming Profile</TabsTrigger>
+              <TabsTrigger value="social">Social & Trackers</TabsTrigger>
+            </TabsList>
 
-                <Form {...form}>
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-6"
-                  >
-                    <TabsContent value="account" className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="username"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Username</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormDescription>
-                              This is your public display name. You can only
-                              change this once every 30 days.
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="email" />
-                            </FormControl>
-                            <FormDescription>
-                              Your email address is used for notifications and
-                              account recovery.
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
+            <form onSubmit={handleSubmit} className="space-y-4 mt-6">
+              <TabsContent value="personal">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Personal Information</CardTitle>
+                    <CardDescription>
+                      Update your personal information and contact details
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <h3 className="text-sm font-medium">Account Details</h3>
-                        <div className="grid grid-cols-2 gap-4 p-4 border rounded-md">
-                          <div>
-                            <p className="text-sm font-medium text-muted-foreground">
-                              Roles
-                            </p>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {user?.roles?.map((role: string) => (
-                                <Badge key={role} variant="outline">
-                                  {role}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-muted-foreground">
-                              Status
-                            </p>
-                            <p>{user?.status}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-muted-foreground">
-                              Member Since
-                            </p>
-                            <p>
-                              {new Date(user?.createdAt).toLocaleDateString()}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-muted-foreground">
-                              Last Login
-                            </p>
-                            <p>N/A</p>
-                          </div>
-                        </div>
+                        <Label htmlFor="firstName">First Name</Label>
+                        <Input
+                          id="firstName"
+                          name="firstName"
+                          value={formData.firstName}
+                          onChange={handleInputChange}
+                          placeholder="Your first name"
+                          disabled={!isPlayer}
+                        />
                       </div>
 
-                      <FormField
-                        control={form.control}
-                        name="currentPassword"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Current Password</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="password" />
-                            </FormControl>
-                            <FormDescription>
-                              Enter your current password to confirm changes.
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                      <div className="space-y-2">
+                        <Label htmlFor="lastName">Last Name</Label>
+                        <Input
+                          id="lastName"
+                          name="lastName"
+                          value={formData.lastName}
+                          onChange={handleInputChange}
+                          placeholder="Your last name"
+                          disabled={!isPlayer}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="Your email address"
                       />
-                    </TabsContent>
+                    </div>
 
-                    <TabsContent value="password" className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="currentPassword"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Current Password</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="password" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                    <div className="space-y-2">
+                      <Label htmlFor="username">Username</Label>
+                      <Input
+                        id="username"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleInputChange}
+                        placeholder="Your username"
                       />
+                    </div>
 
-                      <FormField
-                        control={form.control}
-                        name="newPassword"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>New Password</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="password" />
-                            </FormControl>
-                            <FormDescription>
-                              Password must be at least 8 characters long.
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                    <div className="space-y-2">
+                      <Label htmlFor="country">Country</Label>
+                      <Select
+                        value={formData.country}
+                        onValueChange={(value) =>
+                          handleSelectChange("country", value)
+                        }
+                        disabled={!isPlayer}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your country" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {countries.map((country) => (
+                            <SelectItem key={country.code} value={country.code}>
+                              {country.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                      <FormField
-                        control={form.control}
-                        name="confirmPassword"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Confirm New Password</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="password" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </TabsContent>
-
-                    {user?.player && (
-                      <TabsContent value="player" className="space-y-4">
-                        <div className="space-y-4">
-                          <h3 className="text-sm font-medium">
-                            Player Information
-                          </h3>
-                          <div className="grid grid-cols-2 gap-4 p-4 border rounded-md">
-                            <div>
-                              <p className="text-sm font-medium text-muted-foreground">
-                                In-Game Name
-                              </p>
-                              <p>{user.player.inGameName}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-muted-foreground">
-                                Full Name
-                              </p>
-                              <p>
-                                {user.player.firstName} {user.player.lastName}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-muted-foreground">
-                                Role
-                              </p>
-                              <p>{user.player.role || "N/A"}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-muted-foreground">
-                                Rank
-                              </p>
-                              <p>{user.player.rank || "N/A"}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-muted-foreground">
-                                Team
-                              </p>
-                              <p>{user.player.team?.name || "N/A"}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-muted-foreground">
-                                Join Date
-                              </p>
-                              <p>
-                                {user.player.joinDate
-                                  ? new Date(
-                                      user.player.joinDate
-                                    ).toLocaleDateString()
-                                  : "N/A"}
-                              </p>
-                            </div>
-                          </div>
-
-                          {user.player.socialLinks &&
-                            Object.keys(user.player.socialLinks).length > 0 && (
-                              <div className="space-y-2">
-                                <h3 className="text-sm font-medium">
-                                  Social Links
-                                </h3>
-                                <div className="grid grid-cols-2 gap-2 p-4 border rounded-md">
-                                  {Object.entries(user.player.socialLinks).map(
-                                    ([platform, url]) => (
-                                      <div
-                                        key={platform}
-                                        className="flex items-center"
-                                      >
-                                        <a
-                                          href={url as string}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="text-blue-500 hover:underline"
-                                        >
-                                          {platform}
-                                        </a>
-                                      </div>
-                                    )
-                                  )}
-                                </div>
-                              </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="dateOfBirth">Birth Date</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !formData.dateOfBirth && "text-muted-foreground"
                             )}
-
-                          {user.player.trackerLinks &&
-                            Object.keys(user.player.trackerLinks).length >
-                              0 && (
-                              <div className="space-y-2">
-                                <h3 className="text-sm font-medium">
-                                  Game Tracker Links
-                                </h3>
-                                <div className="grid grid-cols-2 gap-2 p-4 border rounded-md">
-                                  {Object.entries(user.player.trackerLinks).map(
-                                    ([platform, url]) => (
-                                      <div
-                                        key={platform}
-                                        className="flex items-center"
-                                      >
-                                        <a
-                                          href={url as string}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="text-blue-500 hover:underline"
-                                        >
-                                          {platform}
-                                        </a>
-                                      </div>
-                                    )
-                                  )}
-                                </div>
-                              </div>
+                            disabled={!isPlayer}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {formData.dateOfBirth ? (
+                              format(formData.dateOfBirth, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
                             )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={formData.dateOfBirth || undefined}
+                            onSelect={handleDateChange}
+                            initialFocus
+                            captionLayout="dropdown-buttons"
+                            fromYear={1950}
+                            toYear={new Date().getFullYear() - 13}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
 
-                          <div className="flex justify-end">
-                            <Button variant="outline" asChild>
-                              <Link
-                                href={`/dashboard/players/${user.player.id}`}
-                              >
-                                View Full Player Profile
-                              </Link>
-                            </Button>
-                          </div>
-                        </div>
-                      </TabsContent>
-                    )}
+                    <div className="space-y-2">
+                      <Label htmlFor="bio">Bio</Label>
+                      <Textarea
+                        id="bio"
+                        name="bio"
+                        value={formData.bio}
+                        onChange={handleInputChange}
+                        placeholder="Tell us about yourself, your gaming experience, etc."
+                        className="min-h-[100px]"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-                    <Button type="submit" disabled={isSaving}>
-                      {isSaving ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Saving...
-                        </>
-                      ) : (
-                        "Save Changes"
-                      )}
-                    </Button>
-                  </form>
-                </Form>
-              </Tabs>
-            </CardContent>
-          </Card>
+              <TabsContent value="gaming">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Gaming Profile</CardTitle>
+                    <CardDescription>
+                      Update your gaming information and preferences
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="inGameName">In-Game Name</Label>
+                      <Input
+                        id="inGameName"
+                        name="inGameName"
+                        value={formData.inGameName}
+                        onChange={handleInputChange}
+                        placeholder="Your in-game name or handle"
+                        disabled={!isPlayer}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="gameRole">Game Role</Label>
+                        <Input
+                          id="gameRole"
+                          name="gameRole"
+                          value={formData.gameRole}
+                          onChange={handleInputChange}
+                          placeholder="Your role (e.g., Support, Entry Fragger)"
+                          disabled={!isPlayer}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="rank">Rank</Label>
+                        <Input
+                          id="rank"
+                          name="rank"
+                          value={formData.rank}
+                          onChange={handleInputChange}
+                          placeholder="Your current rank"
+                          disabled={!isPlayer}
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="social">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Social Media</CardTitle>
+                    <CardDescription>
+                      Connect your social media accounts
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="discord">Discord</Label>
+                      <Input
+                        id="discord"
+                        name="discord"
+                        value={formData.discord}
+                        onChange={handleInputChange}
+                        placeholder="Your Discord username"
+                        disabled={!isPlayer}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="twitter">Twitter</Label>
+                      <Input
+                        id="twitter"
+                        name="twitter"
+                        value={formData.twitter}
+                        onChange={handleInputChange}
+                        placeholder="Your Twitter username (without @)"
+                        disabled={!isPlayer}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="instagram">Instagram</Label>
+                      <Input
+                        id="instagram"
+                        name="instagram"
+                        value={formData.instagram}
+                        onChange={handleInputChange}
+                        placeholder="Your Instagram username"
+                        disabled={!isPlayer}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="youtube">YouTube</Label>
+                      <Input
+                        id="youtube"
+                        name="youtube"
+                        value={formData.youtube}
+                        onChange={handleInputChange}
+                        placeholder="Your YouTube channel URL"
+                        disabled={!isPlayer}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="twitch">Twitch</Label>
+                      <Input
+                        id="twitch"
+                        name="twitch"
+                        value={formData.twitch}
+                        onChange={handleInputChange}
+                        placeholder="Your Twitch username"
+                        disabled={!isPlayer}
+                      />
+                    </div>
+
+                    <Separator className="my-4" />
+
+                    <h3 className="text-lg font-medium">Game Trackers</h3>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="trackerGG">Tracker.gg</Label>
+                      <Input
+                        id="trackerGG"
+                        name="trackerGG"
+                        value={formData.trackerGG}
+                        onChange={handleInputChange}
+                        placeholder="Your Tracker.gg profile URL"
+                        disabled={!isPlayer}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="steamProfile">Steam</Label>
+                      <Input
+                        id="steamProfile"
+                        name="steamProfile"
+                        value={formData.steamProfile}
+                        onChange={handleInputChange}
+                        placeholder="Your Steam profile URL"
+                        disabled={!isPlayer}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="epicGames">Epic Games</Label>
+                      <Input
+                        id="epicGames"
+                        name="epicGames"
+                        value={formData.epicGames}
+                        onChange={handleInputChange}
+                        placeholder="Your Epic Games username"
+                        disabled={!isPlayer}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="battleNet">Battle.net</Label>
+                      <Input
+                        id="battleNet"
+                        name="battleNet"
+                        value={formData.battleNet}
+                        onChange={handleInputChange}
+                        placeholder="Your Battle.net ID"
+                        disabled={!isPlayer}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="riotGames">Riot Games</Label>
+                      <Input
+                        id="riotGames"
+                        name="riotGames"
+                        value={formData.riotGames}
+                        onChange={handleInputChange}
+                        placeholder="Your Riot Games ID"
+                        disabled={!isPlayer}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <div className="flex justify-end">
+                <Button type="submit" disabled={isSaving}>
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Changes"
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Tabs>
         </div>
       </div>
     </div>
   );
-}
-
-function getInitials(name: string): string {
-  if (!name) return "?";
-
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .substring(0, 2);
 }

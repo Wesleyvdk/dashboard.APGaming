@@ -1,209 +1,303 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { auth, hasAnyRole } from "@/lib/auth";
-import { Role } from "@/prisma/generated/client";
+import { NextResponse } from "next/server"
+import { auth } from "@/lib/auth"
+import { prisma } from "@/lib/prisma"
+import * as z from "zod"
 
-export async function GET(
-  request: Request,
-  props: { params: Promise<{ id: string }> }
-) {
-  const params = await props.params;
-  const player = await prisma.player.findUnique({
-    where: { id: params.id },
-    include: {
-      teams: true,
-      stats: true,
-      user: {
-        select: {
-          id: true,
-          username: true,
-          status: true,
-        },
-      },
-      contracts: {
-        orderBy: {
-          startDate: "desc",
-        },
-      },
-      notes: {
-        include: {
-          author: {
-            select: {
-              username: true,
-            },
+// Define validation schema for player updates
+const playerUpdateSchema = z.object({
+  firstName: z.string().min(1).optional(),
+  lastName: z.string().min(1).optional(),
+  inGameName: z.string().min(1).optional(),
+  email: z.string().email().optional().nullable(),
+  dateOfBirth: z.date().optional().nullable(),
+  country: z.string().optional().nullable(),
+  role: z.string().optional().nullable(),
+  rank: z.string().optional().nullable(),
+  userId: z.string().optional().nullable(),
+  teamIds: z.array(z.string()).optional(),
+  socialLinks: z.record(z.string()).optional(),
+  trackerLinks: z.record(z.string()).optional(),
+})
+
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  try {
+    const session = await auth()
+
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
+    }
+
+    const player = await prisma.player.findUnique({
+      where: { id: params.id },
+      include: {
+        teams: true,
+        user: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            profilePicture: true,
           },
         },
-        orderBy: {
-          createdAt: "desc",
-        },
       },
-    },
-  });
+    })
 
-  if (!player) {
-    return NextResponse.json({ error: "Player not found" }, { status: 404 });
+    if (!player) {
+      return NextResponse.json({ message: "Player not found" }, { status: 404 })
+    }
+
+    return NextResponse.json(player)
+  } catch (error) {
+    console.error("Get player error:", error)
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 })
   }
-
-  return NextResponse.json(player);
 }
 
-export async function PUT(
-  request: Request,
-  props: { params: Promise<{ id: string }> }
-) {
-  const user = await auth();
-  if (!user || !hasAnyRole(user, [Role.ADMIN, Role.TEAM_MANAGER])) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const params = await props.params;
-  const data = await request.json();
+export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+  try {
+    const session = await auth()
 
-  // Start a transaction
-  const result = await prisma.$transaction(async (prisma) => {
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
+    }
+
+    // Check if user has admin or team manager role
+    if (!session.roles.some((role) => ["ADMIN", "TEAM_MANAGER"].includes(role))) {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 })
+    }
+
+    const data = await request.json()
+
+    // Validate the data
+    const validationResult = playerUpdateSchema.safeParse(data)
+    if (!validationResult.success) {
+      return NextResponse.json(
+        {
+          message: "Validation error",
+          errors: validationResult.error.format(),
+        },
+        { status: 400 },
+      )
+    }
+
     // Get the current player
     const currentPlayer = await prisma.player.findUnique({
       where: { id: params.id },
-      include: {
-        user: true,
-      },
-    });
+      include: { user: true },
+    })
 
     if (!currentPlayer) {
-      throw new Error("Player not found");
+      return NextResponse.json({ message: "Player not found" }, { status: 404 })
     }
 
-    // Handle user account changes
-    if (data.userId) {
-      // If the player already has a different user linked
-      if (currentPlayer.userId && currentPlayer.userId !== data.userId) {
-        // Disconnect the current user
-        await prisma.player.update({
-          where: { id: params.id },
-          data: {
-            user: { disconnect: true },
-          },
-        });
-      }
-
-      // Check if the new user exists
-      const existingUser = await prisma.user.findUnique({
+    // Check if user exists if userId is provided and different from current
+    if (data.userId && data.userId !== currentPlayer.userId) {
+      const user = await prisma.user.findUnique({
         where: { id: data.userId },
-        include: {
-          player: true,
-        },
-      });
+        include: { player: true },
+      })
 
-      if (!existingUser) {
-        throw new Error("User not found");
+      if (!user) {
+        return NextResponse.json({ message: "User not found" }, { status: 404 })
       }
 
-      // Check if the user already has a different player profile
-      if (existingUser.player && existingUser.player.id !== params.id) {
-        throw new Error("User already has a player profile");
-      }
-
-      // If the user is disabled, reactivate them and change role to PLAYER
-      if (existingUser.status === "DISABLED") {
-        await prisma.user.update({
-          where: { id: data.userId },
-          data: {
-            status: "ACTIVE",
-            roles: {
-              push: Role.PLAYER,
-            },
-          },
-        });
-      }
-      // If the user is not disabled but has a different role, change to PLAYER
-      else if (!existingUser.roles.includes(Role.PLAYER)) {
-        await prisma.user.update({
-          where: { id: data.userId },
-          data: {
-            roles: {
-              push: Role.PLAYER,
-            },
-          },
-        });
+      // Check if user already has a player profile
+      if (user.player && user.player.id !== params.id) {
+        return NextResponse.json({ message: "User already has a player profile" }, { status: 400 })
       }
     }
 
-    await prisma.player.update({
-      where: { id: params.id },
-      data: {
-        teams: {
-          set: [], // Disconnect all existing teams
+    // Handle team connections/disconnections
+    let teamUpdateData = {}
+    if (data.teamIds) {
+      // Get current team IDs
+      const currentTeams = await prisma.team.findMany({
+        where: {
+          players: {
+            some: {
+              id: params.id,
+            },
+          },
         },
-      },
-    });
+        select: { id: true },
+      })
 
+      const currentTeamIds = currentTeams.map((team) => team.id)
+
+      // Determine teams to connect and disconnect
+      const teamsToConnect = data.teamIds.filter((id: any) => !currentTeamIds.includes(id))
+      const teamsToDisconnect = currentTeamIds.filter((id) => !data.teamIds.includes(id))
+
+      teamUpdateData = {
+        teams: {
+          connect: teamsToConnect.map((id: any) => ({ id })),
+          disconnect: teamsToDisconnect.map((id) => ({ id })),
+        },
+      }
+    }
+
+    // Handle user connection/disconnection
+    let userUpdateData = {}
+    if (data.userId !== undefined) {
+      if (data.userId === null) {
+        // Disconnect user if null is provided
+        userUpdateData = {
+          user: {
+            disconnect: true,
+          },
+        }
+
+        // If there was a user connected, remove PLAYER role
+        if (currentPlayer.userId) {
+          await prisma.user.update({
+            where: { id: currentPlayer.userId },
+            data: {
+              roles: {
+                set: (currentPlayer.user?.roles || []).filter((role) => role !== "PLAYER"),
+              },
+            },
+          })
+        }
+      } else if (data.userId !== currentPlayer.userId) {
+        // Connect new user
+        userUpdateData = {
+          user: {
+            connect: { id: data.userId },
+          },
+        }
+
+        // Add PLAYER role to new user
+        await prisma.user.update({
+          where: { id: data.userId },
+          data: {
+            roles: {
+              push: "PLAYER",
+            },
+          },
+        })
+
+        // If there was a previous user, remove PLAYER role
+        if (currentPlayer.userId) {
+          await prisma.user.update({
+            where: { id: currentPlayer.userId },
+            data: {
+              roles: {
+                set: (currentPlayer.user?.roles || []).filter((role) => role !== "PLAYER"),
+              },
+            },
+          })
+        }
+      }
+    }
+
+    // Update the player
     const player = await prisma.player.update({
       where: { id: params.id },
       data: {
         firstName: data.firstName,
         lastName: data.lastName,
         inGameName: data.inGameName,
-        username: data.username,
-        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
+        email: data.email,
+        dateOfBirth: data.dateOfBirth,
         country: data.country,
-        teams:
-          data.teamIds && data.teamIds.length > 0
-            ? {
-                connect: data.teamIds.map((id: string) => ({ id })),
-              }
-            : undefined,
         role: data.role,
         rank: data.rank,
-        socialLinks: data.socialLinks || {},
-        trackerLinks: data.trackerLinks || {},
-        endDate: data.endDate ? new Date(data.endDate) : null,
-        ...(data.userId && { user: { connect: { id: data.userId } } }),
+        socialLinks: data.socialLinks,
+        trackerLinks: data.trackerLinks,
+        ...userUpdateData,
+        ...teamUpdateData,
       },
       include: {
         teams: true,
-        stats: true,
-        contracts: {
-          where: {
-            isActive: true,
-          },
-        },
         user: {
           select: {
             id: true,
-            email: true,
             username: true,
-            status: true,
+            email: true,
+            profilePicture: true,
           },
         },
       },
-    });
+    })
 
-    // Create activity log
+    // Log activity
     await prisma.activity.create({
       data: {
         type: "PLAYER_UPDATED",
-        message: `Player "${data.inGameName}" updated`,
-        userId: user.userId,
+        message: `Player ${player.firstName} ${player.lastName} (${player.inGameName}) was updated`,
+        user: { connect: { id: session.userId } },
+        metadata: {
+          playerId: player.id,
+          playerName: `${player.firstName} ${player.lastName}`,
+          inGameName: player.inGameName,
+        },
       },
-    });
+    })
 
-    return player;
-  });
-
-  return NextResponse.json(result);
-}
-
-export async function DELETE(
-  request: Request,
-  props: { params: Promise<{ id: string }> }
-) {
-  const user = await auth();
-  if (!user || !hasAnyRole(user, [Role.ADMIN, Role.TEAM_MANAGER])) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(player)
+  } catch (error) {
+    console.error("Update player error:", error)
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 })
   }
-  const params = await props.params;
-  await prisma.player.delete({
-    where: { id: params.id },
-  });
-
-  return NextResponse.json({ success: true });
 }
+
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+  try {
+    const session = await auth()
+
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
+    }
+
+    // Check if user has admin or team manager role
+    if (!session.roles.some((role) => ["ADMIN", "TEAM_MANAGER"].includes(role))) {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 })
+    }
+
+    // Get the player to be deleted
+    const player = await prisma.player.findUnique({
+      where: { id: params.id },
+      include: { user: true },
+    })
+
+    if (!player) {
+      return NextResponse.json({ message: "Player not found" }, { status: 404 })
+    }
+
+    // If player is linked to a user, remove PLAYER role
+    if (player.userId) {
+      await prisma.user.update({
+        where: { id: player.userId },
+        data: {
+          roles: {
+            set: (player.user?.roles || []).filter((role) => role !== "PLAYER"),
+          },
+        },
+      })
+    }
+
+    // Delete the player
+    await prisma.player.delete({
+      where: { id: params.id },
+    })
+
+    // Log activity
+    await prisma.activity.create({
+      data: {
+        type: "PLAYER_UPDATED",
+        message: `Player ${player.firstName} ${player.lastName} (${player.inGameName}) was deleted`,
+        user: { connect: { id: session.userId } },
+        metadata: {
+          playerName: `${player.firstName} ${player.lastName}`,
+          inGameName: player.inGameName,
+        },
+      },
+    })
+
+    return NextResponse.json({ message: "Player deleted successfully" })
+  } catch (error) {
+    console.error("Delete player error:", error)
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 })
+  }
+}
+

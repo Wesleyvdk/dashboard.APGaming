@@ -1,4 +1,4 @@
-import { DraftForm } from "@/components/draft-form";
+import { DraftForm } from "@/components/drafts/draft-form";
 import { getDraftById } from "@/lib/drafts";
 import { auth, hasRole } from "@/lib/auth";
 import { DraftStatus } from "@/lib/types";

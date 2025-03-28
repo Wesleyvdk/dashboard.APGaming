@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -10,6 +13,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   LayoutDashboard,
   Newspaper,
@@ -21,9 +31,12 @@ import {
   FileEdit,
   User,
   LogOut,
+  Loader2,
+  MoreHorizontal,
 } from "lucide-react";
 import { Role } from "@/prisma/generated/client";
 import { hasAnyRole } from "@/lib/client-utils";
+import { Button } from "@/components/ui/button";
 
 interface NavItem {
   title: string;
@@ -115,12 +128,43 @@ interface DashboardSidebarProps {
 }
 
 export function AppSidebar({ userRoles }: DashboardSidebarProps) {
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const router = useRouter();
+  const { toast } = useToast();
+
   const filteredNavItems = navItems.filter((item) =>
     hasAnyRole(userRoles, item.roles)
   );
   const filteredBottomNavItems = bottomNavItems.filter((item) =>
     hasAnyRole(userRoles, item.roles)
   );
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Logged out",
+          description: "You have been successfully logged out.",
+        });
+        router.push("/login");
+      } else {
+        throw new Error("Failed to log out");
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+      toast({
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+        variant: "destructive",
+      });
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <Sidebar>
@@ -146,14 +190,46 @@ export function AppSidebar({ userRoles }: DashboardSidebarProps) {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          {filteredBottomNavItems.map((item: any) => (
-            <SidebarMenuItem key={item.href}>
+          {filteredBottomNavItems.map((item) => (
+            <SidebarMenuItem key={item.href} className="relative">
               <SidebarMenuButton asChild>
                 <a href={item.href}>
                   <item.icon className="mr-2 h-4 w-4" />
                   {item.title}
                 </a>
               </SidebarMenuButton>
+
+              {/* Add three-dot menu to Profile button */}
+              {item.title === "Profile" && (
+                <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        className="text-red-600 focus:text-red-600"
+                        disabled={isLoggingOut}
+                        onClick={handleLogout}
+                      >
+                        {isLoggingOut ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Logging out...
+                          </>
+                        ) : (
+                          <>
+                            <LogOut className="mr-2 h-4 w-4" />
+                            Log out
+                          </>
+                        )}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
             </SidebarMenuItem>
           ))}
         </SidebarMenu>

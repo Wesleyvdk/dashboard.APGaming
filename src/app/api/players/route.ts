@@ -1,202 +1,181 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { auth, hasAnyRole, hasRole } from "@/lib/auth";
-import { Role } from "@/prisma/generated/client";
-import crypto from "crypto";
+import { NextResponse } from "next/server"
+import { auth } from "@/lib/auth"
+import { prisma } from "@/lib/prisma"
+import * as z from "zod"
+
+// Define validation schema for player creation
+const playerSchema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  inGameName: z.string().min(1),
+  email: z.string().email().optional().nullable(),
+  dateOfBirth: z.date().optional().nullable(),
+  country: z.string().optional().nullable(),
+  role: z.string().optional().nullable(),
+  rank: z.string().optional().nullable(),
+  userId: z.string().optional().nullable(),
+  teamIds: z.array(z.string()).optional(),
+  socialLinks: z.record(z.string()).optional(),
+  trackerLinks: z.record(z.string()).optional(),
+})
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const gameId = searchParams.get("gameId");
-  const teamId = searchParams.get("teamId");
+  try {
+    const session = await auth()
 
-  const where = {
-    ...(teamId && { teams: { some: { id: teamId } } }),
-    ...(gameId && { teams: { some: { gameId } } }),
-  };
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
+    }
 
-  const players = await prisma.player.findMany({
-    where,
-    include: {
-      teams: true,
-      stats: true,
-      user: {
-        select: {
-          id: true,
-          username: true,
-          status: true,
+    // Get query parameters
+    const { searchParams } = new URL(request.url)
+    const teamId = searchParams.get("teamId")
+    const search = searchParams.get("search")
+
+    // Build the where clause
+    const where: any = {}
+
+    if (teamId) {
+      where.teams = {
+        some: {
+          id: teamId,
+        },
+      }
+    }
+
+    if (search) {
+      where.OR = [
+        { firstName: { contains: search, mode: "insensitive" } },
+        { lastName: { contains: search, mode: "insensitive" } },
+        { inGameName: { contains: search, mode: "insensitive" } },
+      ]
+    }
+
+    const players = await prisma.player.findMany({
+      where,
+      include: {
+        teams: true,
+        user: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            profilePicture: true,
+          },
         },
       },
-      contracts: {
-        where: {
-          isActive: true,
-        },
+      orderBy: {
+        lastName: "asc",
       },
-    },
-  });
+    })
 
-  return NextResponse.json(players);
+    return NextResponse.json(players)
+  } catch (error) {
+    console.error("Get players error:", error)
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 })
+  }
 }
 
 export async function POST(request: Request) {
-  const user = await auth();
-  if (!user || !hasAnyRole(user, [Role.ADMIN, Role.TEAM_MANAGER])) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  try {
+    const session = await auth()
 
-  const data = await request.json();
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
+    }
 
-  // Start a transaction
-  const result = await prisma.$transaction(async (prisma) => {
-    let userId = data.userId;
-    let invitationLink = null;
+    // Check if user has admin or team manager role
+    if (!session.roles.some((role) => ["ADMIN", "TEAM_MANAGER"].includes(role))) {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 })
+    }
 
-    // If no userId is provided but email is, check if user exists or create one
-    if (!userId && data.email) {
-      // Check if a user with this email already exists
-      const existingUser = await prisma.user.findUnique({
-        where: { email: data.email },
-      });
+    const data = await request.json()
 
-      if (existingUser) {
-        // Use existing user
-        userId = existingUser.id;
-
-        // If the user is disabled, reactivate them and add PLAYER role
-        if (existingUser.status === "DISABLED") {
-          await prisma.user.update({
-            where: { id: userId },
-            data: {
-              status: "ACTIVE",
-              roles: {
-                push: Role.PLAYER,
-              },
-            },
-          });
-        }
-        // If the user is not disabled, add PLAYER role if not already present
-        else if (!existingUser.roles.includes(Role.PLAYER)) {
-          await prisma.user.update({
-            where: { id: userId },
-            data: {
-              roles: {
-                push: Role.PLAYER,
-              },
-            },
-          });
-        }
-      } else {
-        // Create a new user with a pending status
-        const invitationToken = crypto.randomBytes(32).toString("hex");
-
-        const newUser = await prisma.user.create({
-          data: {
-            email: data.email,
-            username: data.inGameName, // Use in-game name as initial username
-            roles: [Role.PLAYER],
-            status: "PENDING",
-            invitationToken,
-          },
-        });
-
-        userId = newUser.id;
-        invitationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/invite/accept/${invitationToken}`;
-      }
-    } else if (userId) {
-      const existingUser = await prisma.user.findUnique({
-        where: { id: userId },
-        include: {
-          player: true,
+    // Validate the data
+    const validationResult = playerSchema.safeParse(data)
+    if (!validationResult.success) {
+      return NextResponse.json(
+        {
+          message: "Validation error",
+          errors: validationResult.error.format(),
         },
-      });
+        { status: 400 },
+      )
+    }
 
-      if (!existingUser) {
-        throw new Error("User not found");
+    // Check if user exists if userId is provided
+    if (data.userId) {
+      const user = await prisma.user.findUnique({
+        where: { id: data.userId },
+        include: { player: true },
+      })
+
+      if (!user) {
+        return NextResponse.json({ message: "User not found" }, { status: 404 })
       }
 
-      // Check if the user already has a player profile
-      if (existingUser.player) {
-        throw new Error("User already has a player profile");
-      }
-
-      if (existingUser.status === "DISABLED") {
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            status: "ACTIVE",
-            roles: {
-              push: Role.PLAYER,
-            },
-          },
-        });
-      } else if (!existingUser.roles.includes(Role.PLAYER)) {
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            roles: {
-              push: Role.PLAYER,
-            },
-          },
-        });
+      // Check if user already has a player profile
+      if (user.player) {
+        return NextResponse.json({ message: "User already has a player profile" }, { status: 400 })
       }
     }
 
     // Create the player
-
     const player = await prisma.player.create({
       data: {
         firstName: data.firstName,
         lastName: data.lastName,
         inGameName: data.inGameName,
-        username: data.username,
-        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
+        email: data.email,
+        dateOfBirth: data.dateOfBirth,
         country: data.country,
-        teams:
-          data.teamIds && data.teamIds.length > 0
-            ? {
-                connect: data.teamIds.map((id: string) => ({ id })),
-              }
-            : undefined,
         role: data.role,
         rank: data.rank,
-        socialLinks: data.socialLinks || {},
-        trackerLinks: data.trackerLinks || {},
-        ...(userId && { user: { connect: { id: userId } } }),
-        ...(data.contract && {
-          contracts: {
-            create: {
-              startDate: new Date(data.contract.startDate),
-              endDate: new Date(data.contract.endDate),
-              terms: data.contract.terms,
-            },
-          },
-        }),
+        socialLinks: data.socialLinks,
+        trackerLinks: data.trackerLinks,
+        user: data.userId ? { connect: { id: data.userId } } : undefined,
+        teams: data.teamIds?.length
+          ? {
+            connect: data.teamIds.map((id: string) => ({ id })),
+          }
+          : undefined,
       },
       include: {
         teams: true,
-        stats: true,
-        contracts: true,
-        user: {
-          select: {
-            id: true,
-            email: true,
-            username: true,
-            status: true,
+        user: true,
+      },
+    })
+
+    // If a user is linked, update their roles to include PLAYER
+    if (data.userId) {
+      await prisma.user.update({
+        where: { id: data.userId },
+        data: {
+          roles: {
+            push: "PLAYER",
           },
         },
-      },
-    });
+      })
+    }
 
-    // Create activity log
+    // Log activity
     await prisma.activity.create({
       data: {
         type: "PLAYER_ADDED",
-        message: `Player "${data.inGameName}" added to the roster`,
-        userId: user.userId,
+        message: `Player ${data.firstName} ${data.lastName} (${data.inGameName}) was added`,
+        user: { connect: { id: session.userId } },
+        metadata: {
+          playerId: player.id,
+          playerName: `${data.firstName} ${data.lastName}`,
+          inGameName: data.inGameName,
+        },
       },
-    });
+    })
 
-    return { player, invitationLink };
-  });
-
-  return NextResponse.json(result);
+    return NextResponse.json(player, { status: 201 })
+  } catch (error) {
+    console.error("Create player error:", error)
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 })
+  }
 }
+

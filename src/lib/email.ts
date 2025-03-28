@@ -2,9 +2,10 @@ import { isResendConfigured, resend } from "./resend";
 import { render } from "@react-email/render";
 import ResetPasswordEmail from "@/emails/reset-password-email";
 import WelcomeEmail from "@/emails/welcome-email"
+import EventReminderEmail from "@/emails/event-reminder-email"
 import nodemailer from "nodemailer";
 
-type EmailTemplate = "RESET_PASSWORD" | "WELCOME"
+type EmailTemplate = "RESET_PASSWORD" | "WELCOME" | "EVENT_REMINDER"
 
 interface SendEmailOptions {
   to: string;
@@ -57,6 +58,16 @@ async function sendWithResend({
           loginLink: data.loginLink,
         }),
       )
+    } else if (template === "EVENT_REMINDER") {
+      html = await render(
+        EventReminderEmail({
+          userName: data.userName,
+          eventTitle: data.eventTitle,
+          eventDate: data.eventDate,
+          eventLocation: data.eventLocation,
+          eventDescription: data.eventDescription,
+        }),
+      )
     }
 
     const { error } = await resend.emails.send({
@@ -104,6 +115,16 @@ async function sendWithNodemailer({
           userName: data.userName,
         })
       );
+    } else if (template === "EVENT_REMINDER") {
+      html = await render(
+        EventReminderEmail({
+          userName: data.userName,
+          eventTitle: data.eventTitle,
+          eventDate: data.eventDate,
+          eventLocation: data.eventLocation,
+          eventDescription: data.eventDescription,
+        }),
+      )
     }
 
     // Send the email

@@ -49,9 +49,10 @@ export async function PUT(
   const params = await props.params;
 
   const data = await request.json();
+  const { id } = params;
 
-  const event = await prisma.event.update({
-    where: { id: params.id },
+  const updatedEvent = await prisma.event.update({
+    where: { id },
     data: {
       title: data.title,
       description: data.description,
@@ -59,13 +60,15 @@ export async function PUT(
       endDate: new Date(data.endDate),
       allDay: data.allDay,
       type: data.type,
+      location: data.location,
+      isPublic: data.isPublic,
       ...(data.teamId
         ? { team: { connect: { id: data.teamId } } }
         : { team: { disconnect: true } }),
     },
   });
 
-  return NextResponse.json(event);
+  return NextResponse.json(updatedEvent);
 }
 
 export async function DELETE(

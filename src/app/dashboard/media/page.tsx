@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { MediaLibrary } from "@/components/media-library";
-import { MediaUploadButton } from "@/components/media-upload-button";
+import { MediaLibrary } from "@/components/media/media-library";
+import { MediaUploadButton } from "@/components/media/media-upload-button";
 
 export default function MediaPage() {
   return (

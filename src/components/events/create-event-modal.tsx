@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -34,6 +35,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 const eventFormSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
@@ -45,6 +47,8 @@ const eventFormSchema = z.object({
   allDay: z.boolean().default(false),
   type: z.nativeEnum(EventType),
   teamId: z.string().optional(),
+  location: z.string().optional(),
+  isPublic: z.boolean().default(false),
 });
 
 interface Team {
@@ -83,10 +87,13 @@ export function CreateEventModal({
       endTime: "10:00",
       allDay: false,
       type: EventType.OTHER,
+      location: "",
+      isPublic: false,
     },
   });
 
   const watchAllDay = form.watch("allDay");
+  const { register } = form;
 
   useEffect(() => {
     if (isOpen) {
@@ -132,6 +139,8 @@ export function CreateEventModal({
         allDay: values.allDay,
         type: values.type,
         teamId: values.teamId || null,
+        location: values.location,
+        isPublic: values.isPublic,
       };
 
       const response = await fetch("/api/events", {
@@ -154,6 +163,7 @@ export function CreateEventModal({
         throw new Error("Failed to create event");
       }
     } catch (error) {
+      console.error("Failed to create event:", error);
       toast({
         title: "Error",
         description: "Failed to create event. Please try again.",
@@ -321,6 +331,20 @@ export function CreateEventModal({
                   />
                 </div>
               )}
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                placeholder="Enter event location"
+                {...register("location")}
+              />
+            </div>
+
+            <div className="flex items-center space-x-2 my-4">
+              <Checkbox id="isPublic" {...register("isPublic")} />
+              <Label htmlFor="isPublic">Make this event public</Label>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

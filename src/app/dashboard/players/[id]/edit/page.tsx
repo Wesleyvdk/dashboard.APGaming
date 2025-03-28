@@ -1,6 +1,6 @@
 import { getPlayerById } from "@/lib/players";
 import { getGames } from "@/lib/games";
-import { PlayerForm } from "@/components/player-form";
+import { PlayerForm } from "@/components/players/player-form";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 

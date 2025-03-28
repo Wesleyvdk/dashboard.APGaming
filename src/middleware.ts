@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (token) {
-    const decodedToken = await verifyToken(request);
+    const decodedToken = await verifyToken(token);
 
     if (!decodedToken && !request.nextUrl.pathname.startsWith("/login")) {
       return NextResponse.redirect(new URL("/login", request.url));
