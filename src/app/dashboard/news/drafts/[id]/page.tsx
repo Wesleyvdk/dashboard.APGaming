@@ -14,8 +14,8 @@ import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { Edit, ArrowLeft } from "lucide-react";
 import { DraftStatus } from "@/lib/types";
-import { DeleteDraftButton } from "@/components/delete-draft-button";
-import { PublishDraftButton } from "@/components/publish-draft-button";
+import { DeleteDraftButton } from "@/components/events/delete-draft-button";
+import { PublishDraftButton } from "@/components/drafts/publish-draft-button";
 import { Role } from "@/prisma/generated/client";
 
 export default async function ViewDraftPage(props: {

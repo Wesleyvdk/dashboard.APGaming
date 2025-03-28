@@ -117,7 +117,7 @@ export async function POST(request: Request) {
       file.type === "application/pdf" ||
       file.type === "application/msword" ||
       file.type ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     ) {
       mediaType = "DOCUMENT";
     }

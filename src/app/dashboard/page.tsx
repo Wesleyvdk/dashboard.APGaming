@@ -1,10 +1,11 @@
 import { Suspense } from "react";
-import { TasksWidget } from "@/components/tasks-widget";
-import { ActivityWidget } from "@/components/activity-widget";
-import { RosterWidget } from "@/components/roster-widget";
-import { MatchesWidget } from "@/components/matches-widget";
-import { AnnouncementsWidget } from "@/components/announcements-widget";
-import { NewsWidget } from "@/components/news-widget";
+import { TasksWidget } from "@/components/widgets/tasks-widget";
+import { ActivityWidget } from "@/components/widgets/activity-widget";
+import { RosterWidget } from "@/components/widgets/roster-widget";
+import { MatchesWidget } from "@/components/widgets/matches-widget";
+import { AnnouncementsWidget } from "@/components/widgets/announcements-widget";
+import { NewsWidget } from "@/components/widgets/news-widget";
+import { UnlinkedPlayersWidget } from "@/components/widgets/unlinked-players-widget";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -42,6 +43,11 @@ export default function DashboardPage() {
         {/* Recent News */}
         <Suspense fallback={<WidgetSkeleton />}>
           <NewsWidget />
+        </Suspense>
+
+        {/* Unlinked Players */}
+        <Suspense fallback={<WidgetSkeleton />}>
+          <UnlinkedPlayersWidget />
         </Suspense>
       </div>
     </div>

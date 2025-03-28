@@ -1,4 +1,4 @@
-import { DraftForm } from "@/components/draft-form";
+import { DraftForm } from "@/components/drafts/draft-form";
 import { auth, hasAnyRole, hasRole } from "@/lib/auth";
 import { Role } from "@/prisma/generated/client";
 import { redirect } from "next/navigation";

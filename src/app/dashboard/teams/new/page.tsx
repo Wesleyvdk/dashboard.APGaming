@@ -1,5 +1,5 @@
 import { getGames } from "@/lib/games";
-import { TeamForm } from "@/components/team-form";
+import { TeamForm } from "@/components/teams/team-form";
 
 export default async function NewTeamPage() {
   const games = await getGames();

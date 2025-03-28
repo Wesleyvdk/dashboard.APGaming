@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { CalendarView } from "@/components/calendar-view";
-import { EventList } from "@/components/event-list";
+import { CalendarView } from "@/components/events/calendar-view";
+import { EventList } from "@/components/events/event-list";
 
 export default function CalendarPage() {
   return (

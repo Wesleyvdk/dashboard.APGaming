@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PlayerForm } from "@/components/player-form";
-import { InvitationLinkDialog } from "@/components/invitation-link-dialog";
+import { PlayerForm } from "@/components/players/player-form";
+import { InvitationLinkDialog } from "@/components/users/invitation-link-dialog";
 import { useToast } from "@/hooks/use-toast";
 import type { Game } from "@/lib/types";
 

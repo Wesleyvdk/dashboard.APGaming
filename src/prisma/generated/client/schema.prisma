@@ -12,26 +12,59 @@ datasource db {
 }
 
 model User {
-  id              String        @id @default(cuid())
-  username        String        @unique
-  email           String?       @unique
-  password        String?
-  roles           Role[]        @default([USER])
-  status          Status        @default(PENDING)
-  invitationToken String?       @unique
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  news            News[]
-  drafts          Draft[]
-  tasks           Task[]        @relation("AssignedTasks")
-  createdTasks    Task[]        @relation("CreatedTasks")
-  activities      Activity[]
-  teams           Team[]        @relation("TeamManagers")
-  managedGames    GameManager[]
-  playerNotes     PlayerNote[]
-  events          Event[]       @relation("UserEvents")
-  mediaItems      MediaItem[]
-  player          Player?
+  id                String                   @id @default(cuid())
+  username          String                   @unique
+  email             String?                  @unique
+  password          String?
+  roles             Role[]                   @default([USER])
+  status            Status                   @default(PENDING)
+  invitationToken   String?                  @unique
+  profilePicture    String? // URL to profile picture
+  bio               String? // User biography
+  location          String? // User location
+  phoneNumber       String? // User phone number
+  socialLinks       Json? // Social media links
+  notificationPrefs NotificationPreferences?
+  sessions          Session[] // User sessions
+  darkMode          Boolean                  @default(false) // Theme preference
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  news              News[]
+  drafts            Draft[]
+  tasks             Task[]                   @relation("AssignedTasks")
+  createdTasks      Task[]                   @relation("CreatedTasks")
+  activities        Activity[]
+  teams             Team[]                   @relation("TeamManagers")
+  managedGames      GameManager[]
+  playerNotes       PlayerNote[]
+  events            Event[]                  @relation("UserEvents")
+  mediaItems        MediaItem[]
+  player            Player?
+}
+
+model NotificationPreferences {
+  id                   String   @id @default(cuid())
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId               String   @unique
+  emailNotifications   Boolean  @default(true)
+  newsUpdates          Boolean  @default(true)
+  teamUpdates          Boolean  @default(true)
+  matchReminders       Boolean  @default(true)
+  discordNotifications Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  token      String   @unique
+  userAgent  String?
+  ipAddress  String?
+  lastActive DateTime @default(now())
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
 }
 
 enum Role {

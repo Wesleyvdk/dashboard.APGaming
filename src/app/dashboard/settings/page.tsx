@@ -1,19 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -24,53 +11,53 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-
-const settingsFormSchema = z.object({
-  emailNotifications: z.boolean().default(true),
-  discordNotifications: z.boolean().default(false),
-  darkMode: z.boolean().default(false),
-});
+import { NotificationPreferences } from "@/components/settings/notification-preferences";
+import { SessionManagement } from "@/components/settings/session-management";
+import { ThemeSettings } from "@/components/settings/theme-settings";
 
 export default function SettingsPage() {
-  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [notificationPrefs, setNotificationPrefs] = useState<any>(null);
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof settingsFormSchema>>({
-    resolver: zodResolver(settingsFormSchema),
-    defaultValues: {
-      emailNotifications: true,
-      discordNotifications: false,
-      darkMode: false,
-    },
-  });
+  useEffect(() => {
+    fetchNotificationPreferences();
+  }, []);
 
-  const onSubmit = async (values: z.infer<typeof settingsFormSchema>) => {
-    setIsSaving(true);
+  const fetchNotificationPreferences = async () => {
     try {
-      // In a real app, you would save these settings to the server
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Toggle dark mode if needed
-      if (values.darkMode) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
+      const response = await fetch("/api/users/notifications");
+      if (response.ok) {
+        const data = await response.json();
+        setNotificationPrefs(data);
       }
-
-      toast({
-        title: "Success",
-        description: "Your settings have been saved.",
-      });
     } catch (error) {
+      console.error("Error fetching notification preferences:", error);
       toast({
         title: "Error",
-        description: "Failed to save settings. Please try again.",
+        description: "Failed to load notification preferences.",
         variant: "destructive",
       });
     } finally {
-      setIsSaving(false);
+      setIsLoading(false);
     }
   };
+
+  const handleNotificationUpdate = (updatedPrefs: any) => {
+    setNotificationPrefs(updatedPrefs);
+    toast({
+      title: "Success",
+      description: "Notification preferences updated successfully.",
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -82,7 +69,7 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>Application Settings</CardTitle>
           <CardDescription>
-            Manage your application preferences and notifications
+            Manage your application preferences and account settings
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -90,99 +77,23 @@ export default function SettingsPage() {
             <TabsList className="mb-4">
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
               <TabsTrigger value="appearance">Appearance</TabsTrigger>
+              <TabsTrigger value="sessions">Sessions</TabsTrigger>
             </TabsList>
 
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6"
-              >
-                <TabsContent value="notifications" className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="emailNotifications"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">
-                            Email Notifications
-                          </FormLabel>
-                          <FormDescription>
-                            Receive email notifications about important updates
-                            and events.
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+            <TabsContent value="notifications">
+              <NotificationPreferences
+                preferences={notificationPrefs}
+                onUpdate={handleNotificationUpdate}
+              />
+            </TabsContent>
 
-                  <FormField
-                    control={form.control}
-                    name="discordNotifications"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">
-                            Discord Notifications
-                          </FormLabel>
-                          <FormDescription>
-                            Receive notifications via Discord for team events
-                            and announcements.
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </TabsContent>
+            <TabsContent value="appearance">
+              <ThemeSettings />
+            </TabsContent>
 
-                <TabsContent value="appearance" className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="darkMode"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">Dark Mode</FormLabel>
-                          <FormDescription>
-                            Enable dark mode for a more comfortable viewing
-                            experience in low light.
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </TabsContent>
-
-                <Button type="submit" disabled={isSaving}>
-                  {isSaving ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    "Save Changes"
-                  )}
-                </Button>
-              </form>
-            </Form>
+            <TabsContent value="sessions">
+              <SessionManagement />
+            </TabsContent>
           </Tabs>
         </CardContent>
       </Card>

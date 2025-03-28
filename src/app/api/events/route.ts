@@ -13,10 +13,10 @@ export async function GET(request: Request) {
 
   const where = upcoming
     ? {
-        startDate: {
-          gte: new Date(),
-        },
-      }
+      startDate: {
+        gte: new Date(),
+      },
+    }
     : {};
 
   const events = await prisma.event.findMany({
@@ -60,6 +60,8 @@ export async function POST(request: Request) {
       endDate: new Date(data.endDate),
       allDay: data.allDay,
       type: data.type,
+      location: data.location,
+      isPublic: data.isPublic || false,
       ...(data.teamId && { team: { connect: { id: data.teamId } } }),
       createdBy: { connect: { id: user.userId } },
     },

@@ -3,7 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
-  const decodedToken = await verifyToken(request);
+  const token = request.cookies.get("token")?.value
+  if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const decodedToken = await verifyToken(token);
 
   if (!decodedToken) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

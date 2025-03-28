@@ -1,68 +1,40 @@
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma";
-import {
-  auth, hasRole
-} from "@/lib/auth";
-import { Role } from "@/prisma/generated/client";
+import { auth } from "@/lib/auth"
+import { prisma } from "@/lib/prisma"
 
-export async function GET(
-  request: Request,
-  props: { params: Promise<{ id: string }> }
-) {
-  const user = await auth();
-  if (!user || !hasRole(user, Role.ADMIN)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const params = await props.params;
-  const targetUser = await prisma.user.findUnique({
-    where: { id: params.id },
-    select: {
-      id: true,
-      email: true,
-      username: true,
-      roles: true,
-      status: true,
-      player: {
-        select: {
-          id: true,
-        },
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  try {
+    const session = await auth()
+    const paramProps = await params
+
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
+    }
+
+    const isAdminOrManager = session.roles.some((role) => ["ADMIN", "TEAM_MANAGER"].includes(role))
+
+    if (!isAdminOrManager && session.userId !== paramProps.id) {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: paramProps.id },
+      include: {
+        player: true,
+        notificationPrefs: true,
       },
-    },
-  });
+    })
 
-  if (!targetUser) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 })
+    }
+
+    const { password, ...userWithoutPassword } = user
+
+    return NextResponse.json(userWithoutPassword)
+  } catch (error) {
+    console.error("Get user error:", error)
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 })
   }
-
-  return NextResponse.json(targetUser);
 }
 
-export async function PATCH(
-  request: Request,
-  props: { params: Promise<{ id: string }> }
-) {
-  const user = await auth();
-  if (!user || !hasRole(user, Role.ADMIN)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const params = await props.params;
-
-  const { roles, status } = await request.json();
-  const updateData: any = {};
-
-  if (roles) updateData.roles = roles;
-  if (status) updateData.status = status;
-
-  const updatedUser = await prisma.user.update({
-    where: { id: params.id },
-    data: updateData,
-    select: {
-      id: true,
-      username: true,
-      roles: true,
-      status: true,
-    },
-  });
-
-  return NextResponse.json(updatedUser);
-}

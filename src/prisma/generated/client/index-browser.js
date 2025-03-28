@@ -125,8 +125,37 @@ exports.Prisma.UserScalarFieldEnum = {
   roles: 'roles',
   status: 'status',
   invitationToken: 'invitationToken',
+  profilePicture: 'profilePicture',
+  bio: 'bio',
+  location: 'location',
+  phoneNumber: 'phoneNumber',
+  socialLinks: 'socialLinks',
+  darkMode: 'darkMode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NotificationPreferencesScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  emailNotifications: 'emailNotifications',
+  newsUpdates: 'newsUpdates',
+  teamUpdates: 'teamUpdates',
+  matchReminders: 'matchReminders',
+  discordNotifications: 'discordNotifications',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  userAgent: 'userAgent',
+  ipAddress: 'ipAddress',
+  lastActive: 'lastActive',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.TaskScalarFieldEnum = {
@@ -325,15 +354,15 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
-};
-
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
+};
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
 };
 exports.Status = exports.$Enums.Status = {
   PENDING: 'PENDING',
@@ -408,6 +437,8 @@ exports.MediaType = exports.$Enums.MediaType = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  NotificationPreferences: 'NotificationPreferences',
+  Session: 'Session',
   Task: 'Task',
   Activity: 'Activity',
   Team: 'Team',
