@@ -39,5 +39,5 @@ jobs:
       - name: Upload to Cloudflare R2
         run: |
           aws s3 cp "neon-backup-${BACKUP_TS}.sql.gz" "s3://${R2_BUCKET_NAME}/neon-backup-${BACKUP_TS}.sql.gz" \
-            --endpoint-url "https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com" \
+            --endpoint-url "https://5adccf59bc008f0c2b16f83d5a49ac9a.r2.cloudflarestorage.com" \
             --checksum-algorithm CRC32
