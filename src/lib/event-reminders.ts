@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma"
 import { sendEmail } from "@/lib/email"
-import { sendDiscordEventReminder } from "@/lib/discord-server"
 
 export async function processEventReminders() {
     // Get events that are coming up in the next 24 hours and haven't had reminders sent
@@ -23,7 +22,6 @@ export async function processEventReminders() {
                                 select: {
                                     id: true,
                                     email: true,
-                                    discordId: true,
                                     notificationPreferences: true,
                                 },
                             },
@@ -71,16 +69,6 @@ export async function processEventReminders() {
                         eventDescription: event.description || "",
                     },
                 })
-            }
-
-            // Send Discord notifications
-            if (user?.notificationPreferences?.discordNotifications && user.discordId) {
-                await sendDiscordEventReminder(
-                    user.discordId,
-                    event.title,
-                    event.startDate.toLocaleString(),
-                    event.location || "TBA",
-                )
             }
         }
 
