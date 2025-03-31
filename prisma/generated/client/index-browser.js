@@ -301,7 +301,8 @@ exports.Prisma.EventScalarFieldEnum = {
   reminderSent: 'reminderSent',
   createdById: 'createdById',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  maxAttendees: 'maxAttendees'
 };
 
 exports.Prisma.DraftScalarFieldEnum = {
@@ -336,6 +337,47 @@ exports.Prisma.MediaItemScalarFieldEnum = {
   updatedAt: 'updatedAt',
   tags: 'tags',
   folder: 'folder'
+};
+
+exports.Prisma.PageViewScalarFieldEnum = {
+  id: 'id',
+  path: 'path',
+  referrer: 'referrer',
+  userAgent: 'userAgent',
+  ipAddress: 'ipAddress',
+  timestamp: 'timestamp',
+  sessionId: 'sessionId',
+  countryCode: 'countryCode',
+  deviceType: 'deviceType',
+  browserName: 'browserName'
+};
+
+exports.Prisma.EventAttendanceScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  name: 'name',
+  email: 'email',
+  wantsReminder: 'wantsReminder',
+  status: 'status',
+  registeredAt: 'registeredAt',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  referrer: 'referrer'
+};
+
+exports.Prisma.WebsiteStatisticScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  pageViews: 'pageViews',
+  uniqueVisitors: 'uniqueVisitors',
+  newVisitors: 'newVisitors',
+  returningVisitors: 'returningVisitors',
+  averageSessionDuration: 'averageSessionDuration',
+  bounceRate: 'bounceRate',
+  topReferrers: 'topReferrers',
+  topPages: 'topPages',
+  deviceBreakdown: 'deviceBreakdown',
+  countryBreakdown: 'countryBreakdown'
 };
 
 exports.Prisma.SortOrder = {
@@ -457,7 +499,10 @@ exports.Prisma.ModelName = {
   Tag: 'Tag',
   Event: 'Event',
   Draft: 'Draft',
-  MediaItem: 'MediaItem'
+  MediaItem: 'MediaItem',
+  PageView: 'PageView',
+  EventAttendance: 'EventAttendance',
+  WebsiteStatistic: 'WebsiteStatistic'
 };
 
 /**

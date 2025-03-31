@@ -63,7 +63,7 @@ export async function POST(request: Request) {
       location: data.location,
       isPublic: data.isPublic || false,
       ...(data.teamId && { team: { connect: { id: data.teamId } } }),
-      createdBy: { connect: { id: user.userId } },
+      createdBy: { connect: { id: user.id } },
     },
   });
 

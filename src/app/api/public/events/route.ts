@@ -1,64 +1,86 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { cors } from "@/lib/cors"
+
+export async function OPTIONS() {
+    return cors(
+        new Response(null, {
+            status: 204,
+        }),
+    )
+}
 
 export async function GET(request: Request) {
-    const { searchParams } = new URL(request.url)
-    const upcoming = searchParams.get("upcoming") === "true"
-    const limit = searchParams.get("limit") ? Number.parseInt(searchParams.get("limit") as string) : undefined
-    const page = searchParams.get("page") ? Number.parseInt(searchParams.get("page") as string) : 1
-    const pageSize = limit || 10
-    const skip = (page - 1) * pageSize
+    return cors(
+        await (async () => {
+            try {
+                const { searchParams } = new URL(request.url)
+                const limit = Number.parseInt(searchParams.get("limit") || "10")
+                const page = Number.parseInt(searchParams.get("page") || "1")
+                const skip = (page - 1) * limit
 
-    const where = {
-        isPublic: true,
-        ...(upcoming && {
-            startDate: {
-                gte: new Date(),
-            },
-        }),
-    }
-
-    const [events, totalCount] = await Promise.all([
-        prisma.event.findMany({
-            where,
-            include: {
-                team: {
+                // Get upcoming public events
+                const events = await prisma.event.findMany({
+                    where: {
+                        startDate: {
+                            gte: new Date(),
+                        },
+                        isPublic: true,
+                    },
+                    orderBy: {
+                        startDate: "asc",
+                    },
+                    take: limit,
+                    skip: skip,
                     select: {
                         id: true,
-                        name: true,
-                        logo: true,
+                        title: true,
+                        description: true,
+                        startDate: true,
+                        endDate: true,
+                        type: true,
+                        location: true,
+                        maxAttendees: true,
+                        _count: {
+                            select: {
+                                attendees: true,
+                            },
+                        },
                     },
-                },
-            },
-            orderBy: {
-                startDate: "asc",
-            },
-            skip,
-            take: pageSize,
-        }),
-        prisma.event.count({ where }),
-    ])
+                })
 
-    const publicEvents = events.map((event) => ({
-        id: event.id,
-        title: event.title,
-        description: event.description,
-        startDate: event.startDate,
-        endDate: event.endDate,
-        allDay: event.allDay,
-        type: event.type,
-        location: event.location,
-        team: event.team,
-    }))
+                // Get total count for pagination
+                const totalEvents = await prisma.event.count({
+                    where: {
+                        startDate: {
+                            gte: new Date(),
+                        },
+                        isPublic: true,
+                    },
+                })
 
-    return NextResponse.json({
-        events: publicEvents,
-        pagination: {
-            total: totalCount,
-            page,
-            pageSize,
-            pageCount: Math.ceil(totalCount / pageSize),
-        },
-    })
+
+                console.log("Events:", events);
+
+
+                return NextResponse.json({
+                    events: events.map((event) => ({
+                        ...event,
+                        attendeeCount: event._count.attendees,
+                        _count: undefined,
+                    })),
+                    pagination: {
+                        total: totalEvents,
+                        pages: Math.ceil(totalEvents / limit),
+                        current: page,
+                        limit,
+                    },
+                })
+            } catch (error) {
+                console.error("Error fetching public events:", error)
+                return NextResponse.json({ error: "Failed to fetch events" }, { status: 500 })
+            }
+        })(),
+    )
 }
 

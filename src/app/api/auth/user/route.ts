@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
   // Get more user details from the database
   const user = await prisma.user.findUnique({
-    where: { id: decodedToken.userId },
+    where: { id: decodedToken.id },
     select: {
       id: true,
       email: true,

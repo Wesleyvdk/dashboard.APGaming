@@ -292,6 +292,8 @@ model Event {
   createdById String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  attendees EventAttendance[]
+  maxAttendees Int?
 }
 enum EventType {
   MATCH
@@ -357,4 +359,46 @@ enum MediaType {
   AUDIO
   DOCUMENT
   OTHER
+}
+
+model PageView {
+  id          String   @id @default(cuid())
+  path        String
+  referrer    String?
+  userAgent   String?
+  ipAddress   String?
+  timestamp   DateTime @default(now())
+  sessionId   String?
+  countryCode String?
+  deviceType  String?
+  browserName String?
+}
+
+model EventAttendance {
+  id             String    @id @default(cuid())
+  event          Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId        String
+  name           String    // Full name
+  email          String    // Student email
+  wantsReminder  Boolean   @default(false) // Whether to send a reminder
+  status         String    @default("registered") // registered, cancelled
+  registeredAt   DateTime  @default(now())
+  ipAddress      String?
+  userAgent      String?
+  referrer       String?
+}
+
+model WebsiteStatistic {
+  id                     String   @id @default(cuid())
+  date                   DateTime @db.Date @unique
+  pageViews              Int      @default(0)
+  uniqueVisitors         Int      @default(0)
+  newVisitors            Int      @default(0)
+  returningVisitors      Int      @default(0)
+  averageSessionDuration Int      @default(0) // in seconds
+  bounceRate             Float    @default(0) // percentage
+  topReferrers           Json?
+  topPages               Json?
+  deviceBreakdown        Json?
+  countryBreakdown       Json?
 }

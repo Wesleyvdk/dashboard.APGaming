@@ -60,7 +60,7 @@ export async function auth(): Promise<DecodedToken | null> {
   return verifyToken(token)
 }
 
-export async function createSession(userId: string, roles: Role[], request: Request) {
+export async function createSession(id: string, roles: Role[], request: Request) {
   const sessionId = uuidv4()
   const userAgent = request.headers.get("user-agent") || ""
   const ipAddress = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown"
@@ -79,7 +79,7 @@ export async function createSession(userId: string, roles: Role[], request: Requ
   // Create session in database
   const expiresAt = new Date()
   expiresAt.setDate(expiresAt.getDate() + 7) // 7 days from now
-
+  const userId = id // Assuming id is the user ID
   await prisma.session.create({
     data: {
       id: sessionId,
