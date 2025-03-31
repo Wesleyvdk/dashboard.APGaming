@@ -380,6 +380,16 @@ exports.Prisma.WebsiteStatisticScalarFieldEnum = {
   countryBreakdown: 'countryBreakdown'
 };
 
+exports.Prisma.ScheduledReminderScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  scheduledTime: 'scheduledTime',
+  status: 'status',
+  processedAt: 'processedAt',
+  error: 'error',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -502,7 +512,8 @@ exports.Prisma.ModelName = {
   MediaItem: 'MediaItem',
   PageView: 'PageView',
   EventAttendance: 'EventAttendance',
-  WebsiteStatistic: 'WebsiteStatistic'
+  WebsiteStatistic: 'WebsiteStatistic',
+  ScheduledReminder: 'ScheduledReminder'
 };
 
 /**

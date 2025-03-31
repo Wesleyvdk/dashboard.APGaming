@@ -294,6 +294,7 @@ model Event {
   updatedAt   DateTime  @updatedAt
   attendees EventAttendance[]
   maxAttendees Int?
+  reminders     ScheduledReminder[]
 }
 enum EventType {
   MATCH
@@ -401,4 +402,15 @@ model WebsiteStatistic {
   topPages               Json?
   deviceBreakdown        Json?
   countryBreakdown       Json?
+}
+
+model ScheduledReminder {
+  id            String    @id @default(cuid())
+  event         Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId       String
+  scheduledTime DateTime
+  status        String    // PENDING, PROCESSING, COMPLETED, FAILED
+  processedAt   DateTime?
+  error         String?
+  createdAt     DateTime  @default(now())
 }

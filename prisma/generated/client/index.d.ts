@@ -123,6 +123,11 @@ export type EventAttendance = $Result.DefaultSelection<Prisma.$EventAttendancePa
  * 
  */
 export type WebsiteStatistic = $Result.DefaultSelection<Prisma.$WebsiteStatisticPayload>
+/**
+ * Model ScheduledReminder
+ * 
+ */
+export type ScheduledReminder = $Result.DefaultSelection<Prisma.$ScheduledReminderPayload>
 
 /**
  * Enums
@@ -607,6 +612,16 @@ export class PrismaClient<
     * ```
     */
   get websiteStatistic(): Prisma.WebsiteStatisticDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.scheduledReminder`: Exposes CRUD operations for the **ScheduledReminder** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ScheduledReminders
+    * const scheduledReminders = await prisma.scheduledReminder.findMany()
+    * ```
+    */
+  get scheduledReminder(): Prisma.ScheduledReminderDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1068,7 +1083,8 @@ export namespace Prisma {
     MediaItem: 'MediaItem',
     PageView: 'PageView',
     EventAttendance: 'EventAttendance',
-    WebsiteStatistic: 'WebsiteStatistic'
+    WebsiteStatistic: 'WebsiteStatistic',
+    ScheduledReminder: 'ScheduledReminder'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1084,7 +1100,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "notificationPreferences" | "session" | "task" | "activity" | "team" | "game" | "gameManager" | "player" | "playerStats" | "contract" | "playerNote" | "match" | "announcement" | "news" | "tag" | "event" | "draft" | "mediaItem" | "pageView" | "eventAttendance" | "websiteStatistic"
+      modelProps: "user" | "notificationPreferences" | "session" | "task" | "activity" | "team" | "game" | "gameManager" | "player" | "playerStats" | "contract" | "playerNote" | "match" | "announcement" | "news" | "tag" | "event" | "draft" | "mediaItem" | "pageView" | "eventAttendance" | "websiteStatistic" | "scheduledReminder"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2716,6 +2732,80 @@ export namespace Prisma {
           }
         }
       }
+      ScheduledReminder: {
+        payload: Prisma.$ScheduledReminderPayload<ExtArgs>
+        fields: Prisma.ScheduledReminderFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ScheduledReminderFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScheduledReminderPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ScheduledReminderFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScheduledReminderPayload>
+          }
+          findFirst: {
+            args: Prisma.ScheduledReminderFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScheduledReminderPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ScheduledReminderFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScheduledReminderPayload>
+          }
+          findMany: {
+            args: Prisma.ScheduledReminderFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScheduledReminderPayload>[]
+          }
+          create: {
+            args: Prisma.ScheduledReminderCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScheduledReminderPayload>
+          }
+          createMany: {
+            args: Prisma.ScheduledReminderCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ScheduledReminderCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScheduledReminderPayload>[]
+          }
+          delete: {
+            args: Prisma.ScheduledReminderDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScheduledReminderPayload>
+          }
+          update: {
+            args: Prisma.ScheduledReminderUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScheduledReminderPayload>
+          }
+          deleteMany: {
+            args: Prisma.ScheduledReminderDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ScheduledReminderUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ScheduledReminderUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScheduledReminderPayload>[]
+          }
+          upsert: {
+            args: Prisma.ScheduledReminderUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScheduledReminderPayload>
+          }
+          aggregate: {
+            args: Prisma.ScheduledReminderAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateScheduledReminder>
+          }
+          groupBy: {
+            args: Prisma.ScheduledReminderGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ScheduledReminderGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ScheduledReminderCountArgs<ExtArgs>
+            result: $Utils.Optional<ScheduledReminderCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2822,6 +2912,7 @@ export namespace Prisma {
     pageView?: PageViewOmit
     eventAttendance?: EventAttendanceOmit
     websiteStatistic?: WebsiteStatisticOmit
+    scheduledReminder?: ScheduledReminderOmit
   }
 
   /* Types for Logging */
@@ -3265,10 +3356,12 @@ export namespace Prisma {
 
   export type EventCountOutputType = {
     attendees: number
+    reminders: number
   }
 
   export type EventCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     attendees?: boolean | EventCountOutputTypeCountAttendeesArgs
+    reminders?: boolean | EventCountOutputTypeCountRemindersArgs
   }
 
   // Custom InputTypes
@@ -3287,6 +3380,13 @@ export namespace Prisma {
    */
   export type EventCountOutputTypeCountAttendeesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: EventAttendanceWhereInput
+  }
+
+  /**
+   * EventCountOutputType without action
+   */
+  export type EventCountOutputTypeCountRemindersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ScheduledReminderWhereInput
   }
 
 
@@ -21811,6 +21911,7 @@ export namespace Prisma {
     team?: boolean | Event$teamArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
     attendees?: boolean | Event$attendeesArgs<ExtArgs>
+    reminders?: boolean | Event$remindersArgs<ExtArgs>
     _count?: boolean | EventCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["event"]>
 
@@ -21877,6 +21978,7 @@ export namespace Prisma {
     team?: boolean | Event$teamArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
     attendees?: boolean | Event$attendeesArgs<ExtArgs>
+    reminders?: boolean | Event$remindersArgs<ExtArgs>
     _count?: boolean | EventCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type EventIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -21894,6 +21996,7 @@ export namespace Prisma {
       team: Prisma.$TeamPayload<ExtArgs> | null
       createdBy: Prisma.$UserPayload<ExtArgs>
       attendees: Prisma.$EventAttendancePayload<ExtArgs>[]
+      reminders: Prisma.$ScheduledReminderPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -22308,6 +22411,7 @@ export namespace Prisma {
     team<T extends Event$teamArgs<ExtArgs> = {}>(args?: Subset<T, Event$teamArgs<ExtArgs>>): Prisma__TeamClient<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
     createdBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     attendees<T extends Event$attendeesArgs<ExtArgs> = {}>(args?: Subset<T, Event$attendeesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EventAttendancePayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    reminders<T extends Event$remindersArgs<ExtArgs> = {}>(args?: Subset<T, Event$remindersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScheduledReminderPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -22788,6 +22892,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: EventAttendanceScalarFieldEnum | EventAttendanceScalarFieldEnum[]
+  }
+
+  /**
+   * Event.reminders
+   */
+  export type Event$remindersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScheduledReminder
+     */
+    select?: ScheduledReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ScheduledReminder
+     */
+    omit?: ScheduledReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScheduledReminderInclude<ExtArgs> | null
+    where?: ScheduledReminderWhereInput
+    orderBy?: ScheduledReminderOrderByWithRelationInput | ScheduledReminderOrderByWithRelationInput[]
+    cursor?: ScheduledReminderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ScheduledReminderScalarFieldEnum | ScheduledReminderScalarFieldEnum[]
   }
 
   /**
@@ -28698,6 +28826,1090 @@ export namespace Prisma {
 
 
   /**
+   * Model ScheduledReminder
+   */
+
+  export type AggregateScheduledReminder = {
+    _count: ScheduledReminderCountAggregateOutputType | null
+    _min: ScheduledReminderMinAggregateOutputType | null
+    _max: ScheduledReminderMaxAggregateOutputType | null
+  }
+
+  export type ScheduledReminderMinAggregateOutputType = {
+    id: string | null
+    eventId: string | null
+    scheduledTime: Date | null
+    status: string | null
+    processedAt: Date | null
+    error: string | null
+    createdAt: Date | null
+  }
+
+  export type ScheduledReminderMaxAggregateOutputType = {
+    id: string | null
+    eventId: string | null
+    scheduledTime: Date | null
+    status: string | null
+    processedAt: Date | null
+    error: string | null
+    createdAt: Date | null
+  }
+
+  export type ScheduledReminderCountAggregateOutputType = {
+    id: number
+    eventId: number
+    scheduledTime: number
+    status: number
+    processedAt: number
+    error: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ScheduledReminderMinAggregateInputType = {
+    id?: true
+    eventId?: true
+    scheduledTime?: true
+    status?: true
+    processedAt?: true
+    error?: true
+    createdAt?: true
+  }
+
+  export type ScheduledReminderMaxAggregateInputType = {
+    id?: true
+    eventId?: true
+    scheduledTime?: true
+    status?: true
+    processedAt?: true
+    error?: true
+    createdAt?: true
+  }
+
+  export type ScheduledReminderCountAggregateInputType = {
+    id?: true
+    eventId?: true
+    scheduledTime?: true
+    status?: true
+    processedAt?: true
+    error?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ScheduledReminderAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ScheduledReminder to aggregate.
+     */
+    where?: ScheduledReminderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ScheduledReminders to fetch.
+     */
+    orderBy?: ScheduledReminderOrderByWithRelationInput | ScheduledReminderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ScheduledReminderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ScheduledReminders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ScheduledReminders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ScheduledReminders
+    **/
+    _count?: true | ScheduledReminderCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ScheduledReminderMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ScheduledReminderMaxAggregateInputType
+  }
+
+  export type GetScheduledReminderAggregateType<T extends ScheduledReminderAggregateArgs> = {
+        [P in keyof T & keyof AggregateScheduledReminder]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateScheduledReminder[P]>
+      : GetScalarType<T[P], AggregateScheduledReminder[P]>
+  }
+
+
+
+
+  export type ScheduledReminderGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ScheduledReminderWhereInput
+    orderBy?: ScheduledReminderOrderByWithAggregationInput | ScheduledReminderOrderByWithAggregationInput[]
+    by: ScheduledReminderScalarFieldEnum[] | ScheduledReminderScalarFieldEnum
+    having?: ScheduledReminderScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ScheduledReminderCountAggregateInputType | true
+    _min?: ScheduledReminderMinAggregateInputType
+    _max?: ScheduledReminderMaxAggregateInputType
+  }
+
+  export type ScheduledReminderGroupByOutputType = {
+    id: string
+    eventId: string
+    scheduledTime: Date
+    status: string
+    processedAt: Date | null
+    error: string | null
+    createdAt: Date
+    _count: ScheduledReminderCountAggregateOutputType | null
+    _min: ScheduledReminderMinAggregateOutputType | null
+    _max: ScheduledReminderMaxAggregateOutputType | null
+  }
+
+  type GetScheduledReminderGroupByPayload<T extends ScheduledReminderGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ScheduledReminderGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ScheduledReminderGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ScheduledReminderGroupByOutputType[P]>
+            : GetScalarType<T[P], ScheduledReminderGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ScheduledReminderSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    eventId?: boolean
+    scheduledTime?: boolean
+    status?: boolean
+    processedAt?: boolean
+    error?: boolean
+    createdAt?: boolean
+    event?: boolean | EventDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["scheduledReminder"]>
+
+  export type ScheduledReminderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    eventId?: boolean
+    scheduledTime?: boolean
+    status?: boolean
+    processedAt?: boolean
+    error?: boolean
+    createdAt?: boolean
+    event?: boolean | EventDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["scheduledReminder"]>
+
+  export type ScheduledReminderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    eventId?: boolean
+    scheduledTime?: boolean
+    status?: boolean
+    processedAt?: boolean
+    error?: boolean
+    createdAt?: boolean
+    event?: boolean | EventDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["scheduledReminder"]>
+
+  export type ScheduledReminderSelectScalar = {
+    id?: boolean
+    eventId?: boolean
+    scheduledTime?: boolean
+    status?: boolean
+    processedAt?: boolean
+    error?: boolean
+    createdAt?: boolean
+  }
+
+  export type ScheduledReminderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "eventId" | "scheduledTime" | "status" | "processedAt" | "error" | "createdAt", ExtArgs["result"]["scheduledReminder"]>
+  export type ScheduledReminderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    event?: boolean | EventDefaultArgs<ExtArgs>
+  }
+  export type ScheduledReminderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    event?: boolean | EventDefaultArgs<ExtArgs>
+  }
+  export type ScheduledReminderIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    event?: boolean | EventDefaultArgs<ExtArgs>
+  }
+
+  export type $ScheduledReminderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ScheduledReminder"
+    objects: {
+      event: Prisma.$EventPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      eventId: string
+      scheduledTime: Date
+      status: string
+      processedAt: Date | null
+      error: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["scheduledReminder"]>
+    composites: {}
+  }
+
+  type ScheduledReminderGetPayload<S extends boolean | null | undefined | ScheduledReminderDefaultArgs> = $Result.GetResult<Prisma.$ScheduledReminderPayload, S>
+
+  type ScheduledReminderCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ScheduledReminderFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ScheduledReminderCountAggregateInputType | true
+    }
+
+  export interface ScheduledReminderDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ScheduledReminder'], meta: { name: 'ScheduledReminder' } }
+    /**
+     * Find zero or one ScheduledReminder that matches the filter.
+     * @param {ScheduledReminderFindUniqueArgs} args - Arguments to find a ScheduledReminder
+     * @example
+     * // Get one ScheduledReminder
+     * const scheduledReminder = await prisma.scheduledReminder.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ScheduledReminderFindUniqueArgs>(args: SelectSubset<T, ScheduledReminderFindUniqueArgs<ExtArgs>>): Prisma__ScheduledReminderClient<$Result.GetResult<Prisma.$ScheduledReminderPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one ScheduledReminder that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ScheduledReminderFindUniqueOrThrowArgs} args - Arguments to find a ScheduledReminder
+     * @example
+     * // Get one ScheduledReminder
+     * const scheduledReminder = await prisma.scheduledReminder.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ScheduledReminderFindUniqueOrThrowArgs>(args: SelectSubset<T, ScheduledReminderFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ScheduledReminderClient<$Result.GetResult<Prisma.$ScheduledReminderPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first ScheduledReminder that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScheduledReminderFindFirstArgs} args - Arguments to find a ScheduledReminder
+     * @example
+     * // Get one ScheduledReminder
+     * const scheduledReminder = await prisma.scheduledReminder.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ScheduledReminderFindFirstArgs>(args?: SelectSubset<T, ScheduledReminderFindFirstArgs<ExtArgs>>): Prisma__ScheduledReminderClient<$Result.GetResult<Prisma.$ScheduledReminderPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first ScheduledReminder that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScheduledReminderFindFirstOrThrowArgs} args - Arguments to find a ScheduledReminder
+     * @example
+     * // Get one ScheduledReminder
+     * const scheduledReminder = await prisma.scheduledReminder.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ScheduledReminderFindFirstOrThrowArgs>(args?: SelectSubset<T, ScheduledReminderFindFirstOrThrowArgs<ExtArgs>>): Prisma__ScheduledReminderClient<$Result.GetResult<Prisma.$ScheduledReminderPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more ScheduledReminders that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScheduledReminderFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ScheduledReminders
+     * const scheduledReminders = await prisma.scheduledReminder.findMany()
+     * 
+     * // Get first 10 ScheduledReminders
+     * const scheduledReminders = await prisma.scheduledReminder.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const scheduledReminderWithIdOnly = await prisma.scheduledReminder.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ScheduledReminderFindManyArgs>(args?: SelectSubset<T, ScheduledReminderFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScheduledReminderPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a ScheduledReminder.
+     * @param {ScheduledReminderCreateArgs} args - Arguments to create a ScheduledReminder.
+     * @example
+     * // Create one ScheduledReminder
+     * const ScheduledReminder = await prisma.scheduledReminder.create({
+     *   data: {
+     *     // ... data to create a ScheduledReminder
+     *   }
+     * })
+     * 
+     */
+    create<T extends ScheduledReminderCreateArgs>(args: SelectSubset<T, ScheduledReminderCreateArgs<ExtArgs>>): Prisma__ScheduledReminderClient<$Result.GetResult<Prisma.$ScheduledReminderPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many ScheduledReminders.
+     * @param {ScheduledReminderCreateManyArgs} args - Arguments to create many ScheduledReminders.
+     * @example
+     * // Create many ScheduledReminders
+     * const scheduledReminder = await prisma.scheduledReminder.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ScheduledReminderCreateManyArgs>(args?: SelectSubset<T, ScheduledReminderCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ScheduledReminders and returns the data saved in the database.
+     * @param {ScheduledReminderCreateManyAndReturnArgs} args - Arguments to create many ScheduledReminders.
+     * @example
+     * // Create many ScheduledReminders
+     * const scheduledReminder = await prisma.scheduledReminder.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ScheduledReminders and only return the `id`
+     * const scheduledReminderWithIdOnly = await prisma.scheduledReminder.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ScheduledReminderCreateManyAndReturnArgs>(args?: SelectSubset<T, ScheduledReminderCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScheduledReminderPayload<ExtArgs>, T, "createManyAndReturn", ClientOptions>>
+
+    /**
+     * Delete a ScheduledReminder.
+     * @param {ScheduledReminderDeleteArgs} args - Arguments to delete one ScheduledReminder.
+     * @example
+     * // Delete one ScheduledReminder
+     * const ScheduledReminder = await prisma.scheduledReminder.delete({
+     *   where: {
+     *     // ... filter to delete one ScheduledReminder
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ScheduledReminderDeleteArgs>(args: SelectSubset<T, ScheduledReminderDeleteArgs<ExtArgs>>): Prisma__ScheduledReminderClient<$Result.GetResult<Prisma.$ScheduledReminderPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one ScheduledReminder.
+     * @param {ScheduledReminderUpdateArgs} args - Arguments to update one ScheduledReminder.
+     * @example
+     * // Update one ScheduledReminder
+     * const scheduledReminder = await prisma.scheduledReminder.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ScheduledReminderUpdateArgs>(args: SelectSubset<T, ScheduledReminderUpdateArgs<ExtArgs>>): Prisma__ScheduledReminderClient<$Result.GetResult<Prisma.$ScheduledReminderPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more ScheduledReminders.
+     * @param {ScheduledReminderDeleteManyArgs} args - Arguments to filter ScheduledReminders to delete.
+     * @example
+     * // Delete a few ScheduledReminders
+     * const { count } = await prisma.scheduledReminder.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ScheduledReminderDeleteManyArgs>(args?: SelectSubset<T, ScheduledReminderDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ScheduledReminders.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScheduledReminderUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ScheduledReminders
+     * const scheduledReminder = await prisma.scheduledReminder.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ScheduledReminderUpdateManyArgs>(args: SelectSubset<T, ScheduledReminderUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ScheduledReminders and returns the data updated in the database.
+     * @param {ScheduledReminderUpdateManyAndReturnArgs} args - Arguments to update many ScheduledReminders.
+     * @example
+     * // Update many ScheduledReminders
+     * const scheduledReminder = await prisma.scheduledReminder.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ScheduledReminders and only return the `id`
+     * const scheduledReminderWithIdOnly = await prisma.scheduledReminder.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ScheduledReminderUpdateManyAndReturnArgs>(args: SelectSubset<T, ScheduledReminderUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScheduledReminderPayload<ExtArgs>, T, "updateManyAndReturn", ClientOptions>>
+
+    /**
+     * Create or update one ScheduledReminder.
+     * @param {ScheduledReminderUpsertArgs} args - Arguments to update or create a ScheduledReminder.
+     * @example
+     * // Update or create a ScheduledReminder
+     * const scheduledReminder = await prisma.scheduledReminder.upsert({
+     *   create: {
+     *     // ... data to create a ScheduledReminder
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ScheduledReminder we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ScheduledReminderUpsertArgs>(args: SelectSubset<T, ScheduledReminderUpsertArgs<ExtArgs>>): Prisma__ScheduledReminderClient<$Result.GetResult<Prisma.$ScheduledReminderPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of ScheduledReminders.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScheduledReminderCountArgs} args - Arguments to filter ScheduledReminders to count.
+     * @example
+     * // Count the number of ScheduledReminders
+     * const count = await prisma.scheduledReminder.count({
+     *   where: {
+     *     // ... the filter for the ScheduledReminders we want to count
+     *   }
+     * })
+    **/
+    count<T extends ScheduledReminderCountArgs>(
+      args?: Subset<T, ScheduledReminderCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ScheduledReminderCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ScheduledReminder.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScheduledReminderAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ScheduledReminderAggregateArgs>(args: Subset<T, ScheduledReminderAggregateArgs>): Prisma.PrismaPromise<GetScheduledReminderAggregateType<T>>
+
+    /**
+     * Group by ScheduledReminder.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScheduledReminderGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ScheduledReminderGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ScheduledReminderGroupByArgs['orderBy'] }
+        : { orderBy?: ScheduledReminderGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ScheduledReminderGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetScheduledReminderGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ScheduledReminder model
+   */
+  readonly fields: ScheduledReminderFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ScheduledReminder.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ScheduledReminderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    event<T extends EventDefaultArgs<ExtArgs> = {}>(args?: Subset<T, EventDefaultArgs<ExtArgs>>): Prisma__EventClient<$Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ScheduledReminder model
+   */ 
+  interface ScheduledReminderFieldRefs {
+    readonly id: FieldRef<"ScheduledReminder", 'String'>
+    readonly eventId: FieldRef<"ScheduledReminder", 'String'>
+    readonly scheduledTime: FieldRef<"ScheduledReminder", 'DateTime'>
+    readonly status: FieldRef<"ScheduledReminder", 'String'>
+    readonly processedAt: FieldRef<"ScheduledReminder", 'DateTime'>
+    readonly error: FieldRef<"ScheduledReminder", 'String'>
+    readonly createdAt: FieldRef<"ScheduledReminder", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ScheduledReminder findUnique
+   */
+  export type ScheduledReminderFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScheduledReminder
+     */
+    select?: ScheduledReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ScheduledReminder
+     */
+    omit?: ScheduledReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScheduledReminderInclude<ExtArgs> | null
+    /**
+     * Filter, which ScheduledReminder to fetch.
+     */
+    where: ScheduledReminderWhereUniqueInput
+  }
+
+  /**
+   * ScheduledReminder findUniqueOrThrow
+   */
+  export type ScheduledReminderFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScheduledReminder
+     */
+    select?: ScheduledReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ScheduledReminder
+     */
+    omit?: ScheduledReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScheduledReminderInclude<ExtArgs> | null
+    /**
+     * Filter, which ScheduledReminder to fetch.
+     */
+    where: ScheduledReminderWhereUniqueInput
+  }
+
+  /**
+   * ScheduledReminder findFirst
+   */
+  export type ScheduledReminderFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScheduledReminder
+     */
+    select?: ScheduledReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ScheduledReminder
+     */
+    omit?: ScheduledReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScheduledReminderInclude<ExtArgs> | null
+    /**
+     * Filter, which ScheduledReminder to fetch.
+     */
+    where?: ScheduledReminderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ScheduledReminders to fetch.
+     */
+    orderBy?: ScheduledReminderOrderByWithRelationInput | ScheduledReminderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ScheduledReminders.
+     */
+    cursor?: ScheduledReminderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ScheduledReminders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ScheduledReminders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ScheduledReminders.
+     */
+    distinct?: ScheduledReminderScalarFieldEnum | ScheduledReminderScalarFieldEnum[]
+  }
+
+  /**
+   * ScheduledReminder findFirstOrThrow
+   */
+  export type ScheduledReminderFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScheduledReminder
+     */
+    select?: ScheduledReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ScheduledReminder
+     */
+    omit?: ScheduledReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScheduledReminderInclude<ExtArgs> | null
+    /**
+     * Filter, which ScheduledReminder to fetch.
+     */
+    where?: ScheduledReminderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ScheduledReminders to fetch.
+     */
+    orderBy?: ScheduledReminderOrderByWithRelationInput | ScheduledReminderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ScheduledReminders.
+     */
+    cursor?: ScheduledReminderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ScheduledReminders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ScheduledReminders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ScheduledReminders.
+     */
+    distinct?: ScheduledReminderScalarFieldEnum | ScheduledReminderScalarFieldEnum[]
+  }
+
+  /**
+   * ScheduledReminder findMany
+   */
+  export type ScheduledReminderFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScheduledReminder
+     */
+    select?: ScheduledReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ScheduledReminder
+     */
+    omit?: ScheduledReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScheduledReminderInclude<ExtArgs> | null
+    /**
+     * Filter, which ScheduledReminders to fetch.
+     */
+    where?: ScheduledReminderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ScheduledReminders to fetch.
+     */
+    orderBy?: ScheduledReminderOrderByWithRelationInput | ScheduledReminderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ScheduledReminders.
+     */
+    cursor?: ScheduledReminderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ScheduledReminders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ScheduledReminders.
+     */
+    skip?: number
+    distinct?: ScheduledReminderScalarFieldEnum | ScheduledReminderScalarFieldEnum[]
+  }
+
+  /**
+   * ScheduledReminder create
+   */
+  export type ScheduledReminderCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScheduledReminder
+     */
+    select?: ScheduledReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ScheduledReminder
+     */
+    omit?: ScheduledReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScheduledReminderInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ScheduledReminder.
+     */
+    data: XOR<ScheduledReminderCreateInput, ScheduledReminderUncheckedCreateInput>
+  }
+
+  /**
+   * ScheduledReminder createMany
+   */
+  export type ScheduledReminderCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ScheduledReminders.
+     */
+    data: ScheduledReminderCreateManyInput | ScheduledReminderCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ScheduledReminder createManyAndReturn
+   */
+  export type ScheduledReminderCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScheduledReminder
+     */
+    select?: ScheduledReminderSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ScheduledReminder
+     */
+    omit?: ScheduledReminderOmit<ExtArgs> | null
+    /**
+     * The data used to create many ScheduledReminders.
+     */
+    data: ScheduledReminderCreateManyInput | ScheduledReminderCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScheduledReminderIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ScheduledReminder update
+   */
+  export type ScheduledReminderUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScheduledReminder
+     */
+    select?: ScheduledReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ScheduledReminder
+     */
+    omit?: ScheduledReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScheduledReminderInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ScheduledReminder.
+     */
+    data: XOR<ScheduledReminderUpdateInput, ScheduledReminderUncheckedUpdateInput>
+    /**
+     * Choose, which ScheduledReminder to update.
+     */
+    where: ScheduledReminderWhereUniqueInput
+  }
+
+  /**
+   * ScheduledReminder updateMany
+   */
+  export type ScheduledReminderUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ScheduledReminders.
+     */
+    data: XOR<ScheduledReminderUpdateManyMutationInput, ScheduledReminderUncheckedUpdateManyInput>
+    /**
+     * Filter which ScheduledReminders to update
+     */
+    where?: ScheduledReminderWhereInput
+    /**
+     * Limit how many ScheduledReminders to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ScheduledReminder updateManyAndReturn
+   */
+  export type ScheduledReminderUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScheduledReminder
+     */
+    select?: ScheduledReminderSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ScheduledReminder
+     */
+    omit?: ScheduledReminderOmit<ExtArgs> | null
+    /**
+     * The data used to update ScheduledReminders.
+     */
+    data: XOR<ScheduledReminderUpdateManyMutationInput, ScheduledReminderUncheckedUpdateManyInput>
+    /**
+     * Filter which ScheduledReminders to update
+     */
+    where?: ScheduledReminderWhereInput
+    /**
+     * Limit how many ScheduledReminders to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScheduledReminderIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ScheduledReminder upsert
+   */
+  export type ScheduledReminderUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScheduledReminder
+     */
+    select?: ScheduledReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ScheduledReminder
+     */
+    omit?: ScheduledReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScheduledReminderInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ScheduledReminder to update in case it exists.
+     */
+    where: ScheduledReminderWhereUniqueInput
+    /**
+     * In case the ScheduledReminder found by the `where` argument doesn't exist, create a new ScheduledReminder with this data.
+     */
+    create: XOR<ScheduledReminderCreateInput, ScheduledReminderUncheckedCreateInput>
+    /**
+     * In case the ScheduledReminder was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ScheduledReminderUpdateInput, ScheduledReminderUncheckedUpdateInput>
+  }
+
+  /**
+   * ScheduledReminder delete
+   */
+  export type ScheduledReminderDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScheduledReminder
+     */
+    select?: ScheduledReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ScheduledReminder
+     */
+    omit?: ScheduledReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScheduledReminderInclude<ExtArgs> | null
+    /**
+     * Filter which ScheduledReminder to delete.
+     */
+    where: ScheduledReminderWhereUniqueInput
+  }
+
+  /**
+   * ScheduledReminder deleteMany
+   */
+  export type ScheduledReminderDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ScheduledReminders to delete
+     */
+    where?: ScheduledReminderWhereInput
+    /**
+     * Limit how many ScheduledReminders to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ScheduledReminder without action
+   */
+  export type ScheduledReminderDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScheduledReminder
+     */
+    select?: ScheduledReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ScheduledReminder
+     */
+    omit?: ScheduledReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScheduledReminderInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -29038,6 +30250,19 @@ export namespace Prisma {
   };
 
   export type WebsiteStatisticScalarFieldEnum = (typeof WebsiteStatisticScalarFieldEnum)[keyof typeof WebsiteStatisticScalarFieldEnum]
+
+
+  export const ScheduledReminderScalarFieldEnum: {
+    id: 'id',
+    eventId: 'eventId',
+    scheduledTime: 'scheduledTime',
+    status: 'status',
+    processedAt: 'processedAt',
+    error: 'error',
+    createdAt: 'createdAt'
+  };
+
+  export type ScheduledReminderScalarFieldEnum = (typeof ScheduledReminderScalarFieldEnum)[keyof typeof ScheduledReminderScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -30486,6 +31711,7 @@ export namespace Prisma {
     team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
     createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
     attendees?: EventAttendanceListRelationFilter
+    reminders?: ScheduledReminderListRelationFilter
   }
 
   export type EventOrderByWithRelationInput = {
@@ -30507,6 +31733,7 @@ export namespace Prisma {
     team?: TeamOrderByWithRelationInput
     createdBy?: UserOrderByWithRelationInput
     attendees?: EventAttendanceOrderByRelationAggregateInput
+    reminders?: ScheduledReminderOrderByRelationAggregateInput
   }
 
   export type EventWhereUniqueInput = Prisma.AtLeast<{
@@ -30531,6 +31758,7 @@ export namespace Prisma {
     team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
     createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
     attendees?: EventAttendanceListRelationFilter
+    reminders?: ScheduledReminderListRelationFilter
   }, "id">
 
   export type EventOrderByWithAggregationInput = {
@@ -31044,6 +32272,71 @@ export namespace Prisma {
     topPages?: JsonNullableWithAggregatesFilter<"WebsiteStatistic">
     deviceBreakdown?: JsonNullableWithAggregatesFilter<"WebsiteStatistic">
     countryBreakdown?: JsonNullableWithAggregatesFilter<"WebsiteStatistic">
+  }
+
+  export type ScheduledReminderWhereInput = {
+    AND?: ScheduledReminderWhereInput | ScheduledReminderWhereInput[]
+    OR?: ScheduledReminderWhereInput[]
+    NOT?: ScheduledReminderWhereInput | ScheduledReminderWhereInput[]
+    id?: StringFilter<"ScheduledReminder"> | string
+    eventId?: StringFilter<"ScheduledReminder"> | string
+    scheduledTime?: DateTimeFilter<"ScheduledReminder"> | Date | string
+    status?: StringFilter<"ScheduledReminder"> | string
+    processedAt?: DateTimeNullableFilter<"ScheduledReminder"> | Date | string | null
+    error?: StringNullableFilter<"ScheduledReminder"> | string | null
+    createdAt?: DateTimeFilter<"ScheduledReminder"> | Date | string
+    event?: XOR<EventScalarRelationFilter, EventWhereInput>
+  }
+
+  export type ScheduledReminderOrderByWithRelationInput = {
+    id?: SortOrder
+    eventId?: SortOrder
+    scheduledTime?: SortOrder
+    status?: SortOrder
+    processedAt?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    event?: EventOrderByWithRelationInput
+  }
+
+  export type ScheduledReminderWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ScheduledReminderWhereInput | ScheduledReminderWhereInput[]
+    OR?: ScheduledReminderWhereInput[]
+    NOT?: ScheduledReminderWhereInput | ScheduledReminderWhereInput[]
+    eventId?: StringFilter<"ScheduledReminder"> | string
+    scheduledTime?: DateTimeFilter<"ScheduledReminder"> | Date | string
+    status?: StringFilter<"ScheduledReminder"> | string
+    processedAt?: DateTimeNullableFilter<"ScheduledReminder"> | Date | string | null
+    error?: StringNullableFilter<"ScheduledReminder"> | string | null
+    createdAt?: DateTimeFilter<"ScheduledReminder"> | Date | string
+    event?: XOR<EventScalarRelationFilter, EventWhereInput>
+  }, "id">
+
+  export type ScheduledReminderOrderByWithAggregationInput = {
+    id?: SortOrder
+    eventId?: SortOrder
+    scheduledTime?: SortOrder
+    status?: SortOrder
+    processedAt?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: ScheduledReminderCountOrderByAggregateInput
+    _max?: ScheduledReminderMaxOrderByAggregateInput
+    _min?: ScheduledReminderMinOrderByAggregateInput
+  }
+
+  export type ScheduledReminderScalarWhereWithAggregatesInput = {
+    AND?: ScheduledReminderScalarWhereWithAggregatesInput | ScheduledReminderScalarWhereWithAggregatesInput[]
+    OR?: ScheduledReminderScalarWhereWithAggregatesInput[]
+    NOT?: ScheduledReminderScalarWhereWithAggregatesInput | ScheduledReminderScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ScheduledReminder"> | string
+    eventId?: StringWithAggregatesFilter<"ScheduledReminder"> | string
+    scheduledTime?: DateTimeWithAggregatesFilter<"ScheduledReminder"> | Date | string
+    status?: StringWithAggregatesFilter<"ScheduledReminder"> | string
+    processedAt?: DateTimeNullableWithAggregatesFilter<"ScheduledReminder"> | Date | string | null
+    error?: StringNullableWithAggregatesFilter<"ScheduledReminder"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ScheduledReminder"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -32345,6 +33638,7 @@ export namespace Prisma {
     team?: TeamCreateNestedOneWithoutEventsInput
     createdBy: UserCreateNestedOneWithoutEventsInput
     attendees?: EventAttendanceCreateNestedManyWithoutEventInput
+    reminders?: ScheduledReminderCreateNestedManyWithoutEventInput
   }
 
   export type EventUncheckedCreateInput = {
@@ -32364,6 +33658,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     maxAttendees?: number | null
     attendees?: EventAttendanceUncheckedCreateNestedManyWithoutEventInput
+    reminders?: ScheduledReminderUncheckedCreateNestedManyWithoutEventInput
   }
 
   export type EventUpdateInput = {
@@ -32383,6 +33678,7 @@ export namespace Prisma {
     team?: TeamUpdateOneWithoutEventsNestedInput
     createdBy?: UserUpdateOneRequiredWithoutEventsNestedInput
     attendees?: EventAttendanceUpdateManyWithoutEventNestedInput
+    reminders?: ScheduledReminderUpdateManyWithoutEventNestedInput
   }
 
   export type EventUncheckedUpdateInput = {
@@ -32402,6 +33698,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maxAttendees?: NullableIntFieldUpdateOperationsInput | number | null
     attendees?: EventAttendanceUncheckedUpdateManyWithoutEventNestedInput
+    reminders?: ScheduledReminderUncheckedUpdateManyWithoutEventNestedInput
   }
 
   export type EventCreateManyInput = {
@@ -32999,6 +34296,75 @@ export namespace Prisma {
     topPages?: NullableJsonNullValueInput | InputJsonValue
     deviceBreakdown?: NullableJsonNullValueInput | InputJsonValue
     countryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ScheduledReminderCreateInput = {
+    id?: string
+    scheduledTime: Date | string
+    status: string
+    processedAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+    event: EventCreateNestedOneWithoutRemindersInput
+  }
+
+  export type ScheduledReminderUncheckedCreateInput = {
+    id?: string
+    eventId: string
+    scheduledTime: Date | string
+    status: string
+    processedAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ScheduledReminderUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scheduledTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    event?: EventUpdateOneRequiredWithoutRemindersNestedInput
+  }
+
+  export type ScheduledReminderUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    scheduledTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ScheduledReminderCreateManyInput = {
+    id?: string
+    eventId: string
+    scheduledTime: Date | string
+    status: string
+    processedAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ScheduledReminderUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scheduledTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ScheduledReminderUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    scheduledTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -34049,7 +35415,17 @@ export namespace Prisma {
     none?: EventAttendanceWhereInput
   }
 
+  export type ScheduledReminderListRelationFilter = {
+    every?: ScheduledReminderWhereInput
+    some?: ScheduledReminderWhereInput
+    none?: ScheduledReminderWhereInput
+  }
+
   export type EventAttendanceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ScheduledReminderOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -34524,6 +35900,36 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type ScheduledReminderCountOrderByAggregateInput = {
+    id?: SortOrder
+    eventId?: SortOrder
+    scheduledTime?: SortOrder
+    status?: SortOrder
+    processedAt?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ScheduledReminderMaxOrderByAggregateInput = {
+    id?: SortOrder
+    eventId?: SortOrder
+    scheduledTime?: SortOrder
+    status?: SortOrder
+    processedAt?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ScheduledReminderMinOrderByAggregateInput = {
+    id?: SortOrder
+    eventId?: SortOrder
+    scheduledTime?: SortOrder
+    status?: SortOrder
+    processedAt?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type UserCreaterolesInput = {
@@ -35894,11 +37300,25 @@ export namespace Prisma {
     connect?: EventAttendanceWhereUniqueInput | EventAttendanceWhereUniqueInput[]
   }
 
+  export type ScheduledReminderCreateNestedManyWithoutEventInput = {
+    create?: XOR<ScheduledReminderCreateWithoutEventInput, ScheduledReminderUncheckedCreateWithoutEventInput> | ScheduledReminderCreateWithoutEventInput[] | ScheduledReminderUncheckedCreateWithoutEventInput[]
+    connectOrCreate?: ScheduledReminderCreateOrConnectWithoutEventInput | ScheduledReminderCreateOrConnectWithoutEventInput[]
+    createMany?: ScheduledReminderCreateManyEventInputEnvelope
+    connect?: ScheduledReminderWhereUniqueInput | ScheduledReminderWhereUniqueInput[]
+  }
+
   export type EventAttendanceUncheckedCreateNestedManyWithoutEventInput = {
     create?: XOR<EventAttendanceCreateWithoutEventInput, EventAttendanceUncheckedCreateWithoutEventInput> | EventAttendanceCreateWithoutEventInput[] | EventAttendanceUncheckedCreateWithoutEventInput[]
     connectOrCreate?: EventAttendanceCreateOrConnectWithoutEventInput | EventAttendanceCreateOrConnectWithoutEventInput[]
     createMany?: EventAttendanceCreateManyEventInputEnvelope
     connect?: EventAttendanceWhereUniqueInput | EventAttendanceWhereUniqueInput[]
+  }
+
+  export type ScheduledReminderUncheckedCreateNestedManyWithoutEventInput = {
+    create?: XOR<ScheduledReminderCreateWithoutEventInput, ScheduledReminderUncheckedCreateWithoutEventInput> | ScheduledReminderCreateWithoutEventInput[] | ScheduledReminderUncheckedCreateWithoutEventInput[]
+    connectOrCreate?: ScheduledReminderCreateOrConnectWithoutEventInput | ScheduledReminderCreateOrConnectWithoutEventInput[]
+    createMany?: ScheduledReminderCreateManyEventInputEnvelope
+    connect?: ScheduledReminderWhereUniqueInput | ScheduledReminderWhereUniqueInput[]
   }
 
   export type EnumEventTypeFieldUpdateOperationsInput = {
@@ -35945,6 +37365,20 @@ export namespace Prisma {
     deleteMany?: EventAttendanceScalarWhereInput | EventAttendanceScalarWhereInput[]
   }
 
+  export type ScheduledReminderUpdateManyWithoutEventNestedInput = {
+    create?: XOR<ScheduledReminderCreateWithoutEventInput, ScheduledReminderUncheckedCreateWithoutEventInput> | ScheduledReminderCreateWithoutEventInput[] | ScheduledReminderUncheckedCreateWithoutEventInput[]
+    connectOrCreate?: ScheduledReminderCreateOrConnectWithoutEventInput | ScheduledReminderCreateOrConnectWithoutEventInput[]
+    upsert?: ScheduledReminderUpsertWithWhereUniqueWithoutEventInput | ScheduledReminderUpsertWithWhereUniqueWithoutEventInput[]
+    createMany?: ScheduledReminderCreateManyEventInputEnvelope
+    set?: ScheduledReminderWhereUniqueInput | ScheduledReminderWhereUniqueInput[]
+    disconnect?: ScheduledReminderWhereUniqueInput | ScheduledReminderWhereUniqueInput[]
+    delete?: ScheduledReminderWhereUniqueInput | ScheduledReminderWhereUniqueInput[]
+    connect?: ScheduledReminderWhereUniqueInput | ScheduledReminderWhereUniqueInput[]
+    update?: ScheduledReminderUpdateWithWhereUniqueWithoutEventInput | ScheduledReminderUpdateWithWhereUniqueWithoutEventInput[]
+    updateMany?: ScheduledReminderUpdateManyWithWhereWithoutEventInput | ScheduledReminderUpdateManyWithWhereWithoutEventInput[]
+    deleteMany?: ScheduledReminderScalarWhereInput | ScheduledReminderScalarWhereInput[]
+  }
+
   export type EventAttendanceUncheckedUpdateManyWithoutEventNestedInput = {
     create?: XOR<EventAttendanceCreateWithoutEventInput, EventAttendanceUncheckedCreateWithoutEventInput> | EventAttendanceCreateWithoutEventInput[] | EventAttendanceUncheckedCreateWithoutEventInput[]
     connectOrCreate?: EventAttendanceCreateOrConnectWithoutEventInput | EventAttendanceCreateOrConnectWithoutEventInput[]
@@ -35957,6 +37391,20 @@ export namespace Prisma {
     update?: EventAttendanceUpdateWithWhereUniqueWithoutEventInput | EventAttendanceUpdateWithWhereUniqueWithoutEventInput[]
     updateMany?: EventAttendanceUpdateManyWithWhereWithoutEventInput | EventAttendanceUpdateManyWithWhereWithoutEventInput[]
     deleteMany?: EventAttendanceScalarWhereInput | EventAttendanceScalarWhereInput[]
+  }
+
+  export type ScheduledReminderUncheckedUpdateManyWithoutEventNestedInput = {
+    create?: XOR<ScheduledReminderCreateWithoutEventInput, ScheduledReminderUncheckedCreateWithoutEventInput> | ScheduledReminderCreateWithoutEventInput[] | ScheduledReminderUncheckedCreateWithoutEventInput[]
+    connectOrCreate?: ScheduledReminderCreateOrConnectWithoutEventInput | ScheduledReminderCreateOrConnectWithoutEventInput[]
+    upsert?: ScheduledReminderUpsertWithWhereUniqueWithoutEventInput | ScheduledReminderUpsertWithWhereUniqueWithoutEventInput[]
+    createMany?: ScheduledReminderCreateManyEventInputEnvelope
+    set?: ScheduledReminderWhereUniqueInput | ScheduledReminderWhereUniqueInput[]
+    disconnect?: ScheduledReminderWhereUniqueInput | ScheduledReminderWhereUniqueInput[]
+    delete?: ScheduledReminderWhereUniqueInput | ScheduledReminderWhereUniqueInput[]
+    connect?: ScheduledReminderWhereUniqueInput | ScheduledReminderWhereUniqueInput[]
+    update?: ScheduledReminderUpdateWithWhereUniqueWithoutEventInput | ScheduledReminderUpdateWithWhereUniqueWithoutEventInput[]
+    updateMany?: ScheduledReminderUpdateManyWithWhereWithoutEventInput | ScheduledReminderUpdateManyWithWhereWithoutEventInput[]
+    deleteMany?: ScheduledReminderScalarWhereInput | ScheduledReminderScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutDraftsInput = {
@@ -36272,6 +37720,20 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type EventCreateNestedOneWithoutRemindersInput = {
+    create?: XOR<EventCreateWithoutRemindersInput, EventUncheckedCreateWithoutRemindersInput>
+    connectOrCreate?: EventCreateOrConnectWithoutRemindersInput
+    connect?: EventWhereUniqueInput
+  }
+
+  export type EventUpdateOneRequiredWithoutRemindersNestedInput = {
+    create?: XOR<EventCreateWithoutRemindersInput, EventUncheckedCreateWithoutRemindersInput>
+    connectOrCreate?: EventCreateOrConnectWithoutRemindersInput
+    upsert?: EventUpsertWithoutRemindersInput
+    connect?: EventWhereUniqueInput
+    update?: XOR<XOR<EventUpdateToOneWithWhereWithoutRemindersInput, EventUpdateWithoutRemindersInput>, EventUncheckedUpdateWithoutRemindersInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -37005,6 +38467,7 @@ export namespace Prisma {
     maxAttendees?: number | null
     team?: TeamCreateNestedOneWithoutEventsInput
     attendees?: EventAttendanceCreateNestedManyWithoutEventInput
+    reminders?: ScheduledReminderCreateNestedManyWithoutEventInput
   }
 
   export type EventUncheckedCreateWithoutCreatedByInput = {
@@ -37023,6 +38486,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     maxAttendees?: number | null
     attendees?: EventAttendanceUncheckedCreateNestedManyWithoutEventInput
+    reminders?: ScheduledReminderUncheckedCreateNestedManyWithoutEventInput
   }
 
   export type EventCreateOrConnectWithoutCreatedByInput = {
@@ -38417,6 +39881,7 @@ export namespace Prisma {
     maxAttendees?: number | null
     createdBy: UserCreateNestedOneWithoutEventsInput
     attendees?: EventAttendanceCreateNestedManyWithoutEventInput
+    reminders?: ScheduledReminderCreateNestedManyWithoutEventInput
   }
 
   export type EventUncheckedCreateWithoutTeamInput = {
@@ -38435,6 +39900,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     maxAttendees?: number | null
     attendees?: EventAttendanceUncheckedCreateNestedManyWithoutEventInput
+    reminders?: ScheduledReminderUncheckedCreateNestedManyWithoutEventInput
   }
 
   export type EventCreateOrConnectWithoutTeamInput = {
@@ -40279,6 +41745,34 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ScheduledReminderCreateWithoutEventInput = {
+    id?: string
+    scheduledTime: Date | string
+    status: string
+    processedAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ScheduledReminderUncheckedCreateWithoutEventInput = {
+    id?: string
+    scheduledTime: Date | string
+    status: string
+    processedAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ScheduledReminderCreateOrConnectWithoutEventInput = {
+    where: ScheduledReminderWhereUniqueInput
+    create: XOR<ScheduledReminderCreateWithoutEventInput, ScheduledReminderUncheckedCreateWithoutEventInput>
+  }
+
+  export type ScheduledReminderCreateManyEventInputEnvelope = {
+    data: ScheduledReminderCreateManyEventInput | ScheduledReminderCreateManyEventInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TeamUpsertWithoutEventsInput = {
     update: XOR<TeamUpdateWithoutEventsInput, TeamUncheckedUpdateWithoutEventsInput>
     create: XOR<TeamCreateWithoutEventsInput, TeamUncheckedCreateWithoutEventsInput>
@@ -40413,6 +41907,35 @@ export namespace Prisma {
     ipAddress?: StringNullableFilter<"EventAttendance"> | string | null
     userAgent?: StringNullableFilter<"EventAttendance"> | string | null
     referrer?: StringNullableFilter<"EventAttendance"> | string | null
+  }
+
+  export type ScheduledReminderUpsertWithWhereUniqueWithoutEventInput = {
+    where: ScheduledReminderWhereUniqueInput
+    update: XOR<ScheduledReminderUpdateWithoutEventInput, ScheduledReminderUncheckedUpdateWithoutEventInput>
+    create: XOR<ScheduledReminderCreateWithoutEventInput, ScheduledReminderUncheckedCreateWithoutEventInput>
+  }
+
+  export type ScheduledReminderUpdateWithWhereUniqueWithoutEventInput = {
+    where: ScheduledReminderWhereUniqueInput
+    data: XOR<ScheduledReminderUpdateWithoutEventInput, ScheduledReminderUncheckedUpdateWithoutEventInput>
+  }
+
+  export type ScheduledReminderUpdateManyWithWhereWithoutEventInput = {
+    where: ScheduledReminderScalarWhereInput
+    data: XOR<ScheduledReminderUpdateManyMutationInput, ScheduledReminderUncheckedUpdateManyWithoutEventInput>
+  }
+
+  export type ScheduledReminderScalarWhereInput = {
+    AND?: ScheduledReminderScalarWhereInput | ScheduledReminderScalarWhereInput[]
+    OR?: ScheduledReminderScalarWhereInput[]
+    NOT?: ScheduledReminderScalarWhereInput | ScheduledReminderScalarWhereInput[]
+    id?: StringFilter<"ScheduledReminder"> | string
+    eventId?: StringFilter<"ScheduledReminder"> | string
+    scheduledTime?: DateTimeFilter<"ScheduledReminder"> | Date | string
+    status?: StringFilter<"ScheduledReminder"> | string
+    processedAt?: DateTimeNullableFilter<"ScheduledReminder"> | Date | string | null
+    error?: StringNullableFilter<"ScheduledReminder"> | string | null
+    createdAt?: DateTimeFilter<"ScheduledReminder"> | Date | string
   }
 
   export type UserCreateWithoutDraftsInput = {
@@ -41147,6 +42670,7 @@ export namespace Prisma {
     maxAttendees?: number | null
     team?: TeamCreateNestedOneWithoutEventsInput
     createdBy: UserCreateNestedOneWithoutEventsInput
+    reminders?: ScheduledReminderCreateNestedManyWithoutEventInput
   }
 
   export type EventUncheckedCreateWithoutAttendeesInput = {
@@ -41165,6 +42689,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     maxAttendees?: number | null
+    reminders?: ScheduledReminderUncheckedCreateNestedManyWithoutEventInput
   }
 
   export type EventCreateOrConnectWithoutAttendeesInput = {
@@ -41199,6 +42724,7 @@ export namespace Prisma {
     maxAttendees?: NullableIntFieldUpdateOperationsInput | number | null
     team?: TeamUpdateOneWithoutEventsNestedInput
     createdBy?: UserUpdateOneRequiredWithoutEventsNestedInput
+    reminders?: ScheduledReminderUpdateManyWithoutEventNestedInput
   }
 
   export type EventUncheckedUpdateWithoutAttendeesInput = {
@@ -41217,6 +42743,99 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maxAttendees?: NullableIntFieldUpdateOperationsInput | number | null
+    reminders?: ScheduledReminderUncheckedUpdateManyWithoutEventNestedInput
+  }
+
+  export type EventCreateWithoutRemindersInput = {
+    id?: string
+    title: string
+    description?: string | null
+    startDate: Date | string
+    endDate: Date | string
+    allDay?: boolean
+    type: $Enums.EventType
+    isPublic?: boolean
+    location: string
+    reminderSent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maxAttendees?: number | null
+    team?: TeamCreateNestedOneWithoutEventsInput
+    createdBy: UserCreateNestedOneWithoutEventsInput
+    attendees?: EventAttendanceCreateNestedManyWithoutEventInput
+  }
+
+  export type EventUncheckedCreateWithoutRemindersInput = {
+    id?: string
+    title: string
+    description?: string | null
+    startDate: Date | string
+    endDate: Date | string
+    allDay?: boolean
+    type: $Enums.EventType
+    teamId?: string | null
+    isPublic?: boolean
+    location: string
+    reminderSent?: boolean
+    createdById: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maxAttendees?: number | null
+    attendees?: EventAttendanceUncheckedCreateNestedManyWithoutEventInput
+  }
+
+  export type EventCreateOrConnectWithoutRemindersInput = {
+    where: EventWhereUniqueInput
+    create: XOR<EventCreateWithoutRemindersInput, EventUncheckedCreateWithoutRemindersInput>
+  }
+
+  export type EventUpsertWithoutRemindersInput = {
+    update: XOR<EventUpdateWithoutRemindersInput, EventUncheckedUpdateWithoutRemindersInput>
+    create: XOR<EventCreateWithoutRemindersInput, EventUncheckedCreateWithoutRemindersInput>
+    where?: EventWhereInput
+  }
+
+  export type EventUpdateToOneWithWhereWithoutRemindersInput = {
+    where?: EventWhereInput
+    data: XOR<EventUpdateWithoutRemindersInput, EventUncheckedUpdateWithoutRemindersInput>
+  }
+
+  export type EventUpdateWithoutRemindersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    allDay?: BoolFieldUpdateOperationsInput | boolean
+    type?: EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    location?: StringFieldUpdateOperationsInput | string
+    reminderSent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maxAttendees?: NullableIntFieldUpdateOperationsInput | number | null
+    team?: TeamUpdateOneWithoutEventsNestedInput
+    createdBy?: UserUpdateOneRequiredWithoutEventsNestedInput
+    attendees?: EventAttendanceUpdateManyWithoutEventNestedInput
+  }
+
+  export type EventUncheckedUpdateWithoutRemindersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    allDay?: BoolFieldUpdateOperationsInput | boolean
+    type?: EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    location?: StringFieldUpdateOperationsInput | string
+    reminderSent?: BoolFieldUpdateOperationsInput | boolean
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maxAttendees?: NullableIntFieldUpdateOperationsInput | number | null
+    attendees?: EventAttendanceUncheckedUpdateManyWithoutEventNestedInput
   }
 
   export type SessionCreateManyUserInput = {
@@ -41630,6 +43249,7 @@ export namespace Prisma {
     maxAttendees?: NullableIntFieldUpdateOperationsInput | number | null
     team?: TeamUpdateOneWithoutEventsNestedInput
     attendees?: EventAttendanceUpdateManyWithoutEventNestedInput
+    reminders?: ScheduledReminderUpdateManyWithoutEventNestedInput
   }
 
   export type EventUncheckedUpdateWithoutCreatedByInput = {
@@ -41648,6 +43268,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maxAttendees?: NullableIntFieldUpdateOperationsInput | number | null
     attendees?: EventAttendanceUncheckedUpdateManyWithoutEventNestedInput
+    reminders?: ScheduledReminderUncheckedUpdateManyWithoutEventNestedInput
   }
 
   export type EventUncheckedUpdateManyWithoutCreatedByInput = {
@@ -41945,6 +43566,7 @@ export namespace Prisma {
     maxAttendees?: NullableIntFieldUpdateOperationsInput | number | null
     createdBy?: UserUpdateOneRequiredWithoutEventsNestedInput
     attendees?: EventAttendanceUpdateManyWithoutEventNestedInput
+    reminders?: ScheduledReminderUpdateManyWithoutEventNestedInput
   }
 
   export type EventUncheckedUpdateWithoutTeamInput = {
@@ -41963,6 +43585,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maxAttendees?: NullableIntFieldUpdateOperationsInput | number | null
     attendees?: EventAttendanceUncheckedUpdateManyWithoutEventNestedInput
+    reminders?: ScheduledReminderUncheckedUpdateManyWithoutEventNestedInput
   }
 
   export type EventUncheckedUpdateManyWithoutTeamInput = {
@@ -42326,6 +43949,15 @@ export namespace Prisma {
     referrer?: string | null
   }
 
+  export type ScheduledReminderCreateManyEventInput = {
+    id?: string
+    scheduledTime: Date | string
+    status: string
+    processedAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+  }
+
   export type EventAttendanceUpdateWithoutEventInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -42360,6 +43992,33 @@ export namespace Prisma {
     ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     referrer?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ScheduledReminderUpdateWithoutEventInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scheduledTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ScheduledReminderUncheckedUpdateWithoutEventInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scheduledTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ScheduledReminderUncheckedUpdateManyWithoutEventInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scheduledTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TagUpdateWithoutDraftsInput = {
