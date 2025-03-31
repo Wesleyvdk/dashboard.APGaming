@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { cors } from "@/lib/cors"
 import { sendEmail } from "@/lib/email"
+import { generateActionToken } from "@/lib/tokens"
 
 // Configure CORS for public API endpoints
 export async function OPTIONS() {
@@ -119,7 +120,22 @@ export async function POST(request: Request, { params }: { params: { id: string 
                     })} from ${startTime} to ${endTime}`
                 }
 
-                // Send confirmation email
+                const expiresAt = new Date()
+                expiresAt.setDate(expiresAt.getDate() + 30)
+
+                const cancelToken = generateActionToken("cancel-registration", attendance.id, email, expiresAt)
+
+                const optOutToken = wantsReminder
+                    ? generateActionToken("opt-out-reminder", attendance.id, email, expiresAt)
+                    : null
+
+                // Create action URLs
+                const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+                const cancelUrl = `${baseUrl}/api/public/events/actions?action=cancel-registration&token=${cancelToken}`
+                const optOutUrl = optOutToken
+                    ? `${baseUrl}/api/public/events/actions?action=opt-out-reminder&token=${optOutToken}`
+                    : null
+
                 await sendEmail({
                     to: email,
                     subject: `Registration Confirmed: ${event.title}`,
@@ -132,6 +148,8 @@ export async function POST(request: Request, { params }: { params: { id: string 
                         eventDescription: event.description || "",
                         wantsReminder: wantsReminder,
                         registrationId: attendance.id,
+                        cancelUrl,
+                        optOutUrl,
                     },
                 })
 

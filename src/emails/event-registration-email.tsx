@@ -8,6 +8,7 @@ import {
   Section,
   Text,
   Hr,
+  Button,
 } from "@react-email/components";
 
 interface EventRegistrationEmailProps {
@@ -18,6 +19,8 @@ interface EventRegistrationEmailProps {
   eventDescription: string;
   wantsReminder: boolean;
   registrationId: string;
+  cancelUrl: string;
+  optOutUrl: string | null;
 }
 
 export const EventRegistrationEmail = ({
@@ -28,6 +31,8 @@ export const EventRegistrationEmail = ({
   eventDescription,
   wantsReminder,
   registrationId,
+  cancelUrl,
+  optOutUrl,
 }: EventRegistrationEmailProps) => {
   const previewText = `Your registration for ${eventTitle} is confirmed!`;
 
@@ -80,10 +85,19 @@ export const EventRegistrationEmail = ({
               : "You've chosen not to receive a reminder for this event."}
           </Text>
 
-          <Text style={text}>
-            If you need to cancel your registration or have any questions,
-            please contact us.
-          </Text>
+          <Section style={actionsSection}>
+            <Text style={actionText}>Need to make changes?</Text>
+
+            <Button href={cancelUrl} style={cancelButton}>
+              Cancel Registration
+            </Button>
+
+            {optOutUrl && (
+              <Button href={optOutUrl} style={optOutButton}>
+                Opt Out of Reminder
+              </Button>
+            )}
+          </Section>
 
           <Text style={text}>We look forward to seeing you there!</Text>
 
@@ -161,6 +175,41 @@ const eventDetail = {
 const hr = {
   borderColor: "#e6ebf1",
   margin: "20px 0",
+};
+
+const actionsSection = {
+  margin: "30px 0",
+  textAlign: "center" as const,
+};
+
+const actionText = {
+  color: "#666",
+  fontSize: "14px",
+  margin: "0 0 15px",
+};
+
+const buttonBase = {
+  backgroundColor: "#f0f0f0",
+  borderRadius: "4px",
+  color: "#333",
+  display: "inline-block",
+  fontSize: "14px",
+  fontWeight: "bold" as const,
+  margin: "0 10px 10px 10px",
+  padding: "12px 20px",
+  textDecoration: "none",
+};
+
+const cancelButton = {
+  ...buttonBase,
+  backgroundColor: "#f8d7da",
+  color: "#721c24",
+};
+
+const optOutButton = {
+  ...buttonBase,
+  backgroundColor: "#e2e3e5",
+  color: "#383d41",
 };
 
 const footer = {
