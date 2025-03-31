@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { cors } from "@/lib/cors"
+import { sendEmail } from "@/lib/email"
 
 // Configure CORS for public API endpoints
 export async function OPTIONS() {
@@ -85,6 +86,52 @@ export async function POST(request: Request, { params }: { params: { id: string 
                         ipAddress: Array.isArray(ipAddress) ? ipAddress[0] : ipAddress,
                         userAgent,
                         referrer,
+                    },
+                })
+
+                const eventDate = event.startDate
+                    ? new Date(event.startDate).toLocaleString("en-US", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    })
+                    : "TBD"
+
+                // Format event end time if available
+                let timeInfo = eventDate
+                if (event.startDate && event.endDate) {
+                    const startTime = new Date(event.startDate).toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    })
+                    const endTime = new Date(event.endDate).toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    })
+                    timeInfo = `${new Date(event.startDate).toLocaleDateString("en-US", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                    })} from ${startTime} to ${endTime}`
+                }
+
+                // Send confirmation email
+                await sendEmail({
+                    to: email,
+                    subject: `Registration Confirmed: ${event.title}`,
+                    template: "EVENT_REGISTRATION",
+                    data: {
+                        userName: name,
+                        eventTitle: event.title,
+                        eventDate: timeInfo,
+                        eventLocation: event.location || "Online",
+                        eventDescription: event.description || "",
+                        wantsReminder: wantsReminder,
+                        registrationId: attendance.id,
                     },
                 })
 

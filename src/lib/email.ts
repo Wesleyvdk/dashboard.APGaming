@@ -4,8 +4,9 @@ import ResetPasswordEmail from "@/emails/reset-password-email";
 import WelcomeEmail from "@/emails/welcome-email"
 import EventReminderEmail from "@/emails/event-reminder-email"
 import nodemailer from "nodemailer";
+import EventRegistrationEmail from "@/emails/event-registration-email";
 
-type EmailTemplate = "RESET_PASSWORD" | "WELCOME" | "EVENT_REMINDER"
+type EmailTemplate = "RESET_PASSWORD" | "WELCOME" | "EVENT_REMINDER" | "EVENT_REGISTRATION";
 
 interface SendEmailOptions {
   to: string;
@@ -68,7 +69,19 @@ async function sendWithResend({
           eventDescription: data.eventDescription,
         }),
       )
-    }
+    } else if (template === "EVENT_REGISTRATION") {
+      html = await render(
+        EventRegistrationEmail({
+          userName: data.userName,
+          eventTitle: data.eventTitle,
+          eventDate: data.eventDate,
+          eventLocation: data.eventLocation,
+          eventDescription: data.eventDescription,
+          wantsReminder: data.wantsReminder,
+          registrationId: data.registrationId,
+        })
+      )
+    };
 
     const { error } = await resend.emails.send({
       from: `AP Gaming <${process.env.EMAIL_FROM || "noreply@apgaming.org"}>`,
