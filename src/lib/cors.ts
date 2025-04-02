@@ -12,7 +12,7 @@ export async function cors(response: Response | NextResponse) {
         headers.set("Access-Control-Allow-Origin", origin)
     } else {
         // For security, we can set this to a specific allowed origin instead of *
-        headers.set("Access-Control-Allow-Origin", allowedOrigins[2])
+        headers.set("Access-Control-Allow-Origin", allowedOrigins[0])
     }
 
     headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
