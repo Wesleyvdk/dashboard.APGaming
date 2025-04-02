@@ -79,6 +79,8 @@ async function sendWithResend({
           eventDescription: data.eventDescription,
           wantsReminder: data.wantsReminder,
           registrationId: data.registrationId,
+          cancelUrl: data.cancelUrl,
+          optOutUrl: data.optOutUrl
         })
       )
     };
