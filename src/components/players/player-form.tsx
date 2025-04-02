@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import type React from "react";
@@ -88,7 +89,7 @@ export function PlayerForm({ playerId }: PlayerFormProps) {
         // Fetch available users
         const usersResponse = await fetch("/api/users?role=USER");
         const usersData = await usersResponse.json();
-        setUsers(usersData);
+        setUsers(usersData.users);
 
         // Fetch available teams
         const teamsResponse = await fetch("/api/teams");
@@ -142,6 +143,8 @@ export function PlayerForm({ playerId }: PlayerFormProps) {
 
     fetchData();
   }, [playerId, toast]);
+
+  console.log(users);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
