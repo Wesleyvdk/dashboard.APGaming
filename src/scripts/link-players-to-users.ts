@@ -8,7 +8,7 @@ async function main() {
     // Get all players without user accounts
     const unlinkedPlayers = await prisma.player.findMany({
         where: {
-            userId: null,
+            id: null,
         },
         orderBy: {
             lastName: "asc",

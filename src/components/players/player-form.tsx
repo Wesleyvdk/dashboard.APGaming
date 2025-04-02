@@ -144,8 +144,6 @@ export function PlayerForm({ playerId }: PlayerFormProps) {
     fetchData();
   }, [playerId, toast]);
 
-  console.log(users);
-
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -198,7 +196,6 @@ export function PlayerForm({ playerId }: PlayerFormProps) {
       userId,
     }));
 
-    // If a user is selected, try to fetch their profile data to pre-fill the form
     if (userId) {
       fetchUserData(userId);
     }
@@ -211,7 +208,6 @@ export function PlayerForm({ playerId }: PlayerFormProps) {
 
       const userData = await response.json();
 
-      // Only update empty fields to avoid overwriting existing data
       setFormData((prev) => ({
         ...prev,
         email: prev.email || userData.email || "",
@@ -235,7 +231,6 @@ export function PlayerForm({ playerId }: PlayerFormProps) {
     setIsSaving(true);
 
     try {
-      // Prepare the data for submission
       const socialLinks = {
         discord: formData.discord,
         twitter: formData.twitter,
@@ -257,7 +252,7 @@ export function PlayerForm({ playerId }: PlayerFormProps) {
         lastName: formData.lastName,
         inGameName: formData.inGameName,
         email: formData.email,
-        dateOfBirth: formData.dateOfBirth,
+        dateOfBirth: formData.dateOfBirth?.toISOString(),
         country: formData.country,
         role: formData.role,
         rank: formData.rank,
@@ -270,7 +265,7 @@ export function PlayerForm({ playerId }: PlayerFormProps) {
       const url = playerId ? `/api/players/${playerId}` : "/api/players";
 
       const method = playerId ? "PATCH" : "POST";
-
+      console.log(submissionData);
       const response = await fetch(url, {
         method,
         headers: {
@@ -295,6 +290,7 @@ export function PlayerForm({ playerId }: PlayerFormProps) {
       router.push("/dashboard/players");
       router.refresh();
     } catch (error) {
+      console.log(error);
       toast({
         title: "Error",
         description:

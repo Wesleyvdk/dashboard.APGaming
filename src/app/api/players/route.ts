@@ -8,12 +8,17 @@ const playerSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   inGameName: z.string().min(1),
-  email: z.string().email().optional().nullable(),
-  dateOfBirth: z.date().optional().nullable(),
-  country: z.string().optional().nullable(),
-  role: z.string().optional().nullable(),
-  rank: z.string().optional().nullable(),
-  userId: z.string().optional().nullable(),
+  email: z.string().optional().nullish(),
+  dateOfBirth: z.preprocess((arg) => {
+    if (typeof arg === 'string') {
+      return new Date(arg);
+    }
+    return arg;
+  }, z.date().nullable()),
+  country: z.string().optional().nullish(),
+  role: z.string().optional().nullish(),
+  rank: z.string().optional().nullish(),
+  userId: z.string().optional().nullish(),
   teamIds: z.array(z.string()).optional(),
   socialLinks: z.record(z.string()).optional(),
   trackerLinks: z.record(z.string()).optional(),
@@ -93,6 +98,7 @@ export async function POST(request: Request) {
 
     // Validate the data
     const validationResult = playerSchema.safeParse(data)
+    console.log(validationResult.error);
     if (!validationResult.success) {
       return NextResponse.json(
         {
@@ -126,7 +132,6 @@ export async function POST(request: Request) {
         firstName: data.firstName,
         lastName: data.lastName,
         inGameName: data.inGameName,
-        email: data.email,
         dateOfBirth: data.dateOfBirth,
         country: data.country,
         role: data.role,
@@ -163,7 +168,7 @@ export async function POST(request: Request) {
       data: {
         type: "PLAYER_ADDED",
         message: `Player ${data.firstName} ${data.lastName} (${data.inGameName}) was added`,
-        user: { connect: { id: session.userId } },
+        user: { connect: { id: session.id } },
         metadata: {
           playerId: player.id,
           playerName: `${data.firstName} ${data.lastName}`,

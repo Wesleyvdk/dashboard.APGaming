@@ -91,7 +91,6 @@ export function CalendarView() {
   };
 
   const handleSlotSelect = (slotInfo: SlotInfo) => {
-    console.log("Slot selected:", slotInfo);
     setSelectedDate(slotInfo.start);
     setCreateModalOpen(true);
   };

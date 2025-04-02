@@ -59,10 +59,6 @@ export async function GET(request: Request) {
                     },
                 })
 
-
-                console.log("Events:", events);
-
-
                 return NextResponse.json({
                     events: events.map((event) => ({
                         ...event,

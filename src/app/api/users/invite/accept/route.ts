@@ -33,8 +33,6 @@ export async function POST(request: Request) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
   const loginLink = `${baseUrl}/login`
 
-  console.log(userUpdate)
-
   await sendEmail({
     to: userUpdate.email as string,
     subject: "Welcome to AP Gaming!",

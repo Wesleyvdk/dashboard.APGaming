@@ -173,6 +173,7 @@ export function DraftForm({ draft, isAdmin = false }: DraftFormProps) {
         throw new Error("Failed to save draft");
       }
     } catch (error) {
+      console.error("Error saving draft:", error);
       toast({
         title: "Error",
         description: "Failed to save draft. Please try again.",

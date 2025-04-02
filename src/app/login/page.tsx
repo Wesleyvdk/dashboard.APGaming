@@ -22,13 +22,13 @@ export default function Login() {
       });
 
       if (response.ok) {
-        console.log("Login successful");
         router.push("/dashboard");
       } else {
         const data = await response.json();
         setError(data.message);
       }
     } catch (error) {
+      console.error("Login error:", error);
       setError("An error occurred. Please try again.");
     }
   };

@@ -65,7 +65,7 @@ export function NewPlayerForm({ games }: NewPlayerFormProps) {
 
   return (
     <>
-      <PlayerForm games={games} onSubmit={handleFormSubmit} />
+      <PlayerForm />
       <InvitationLinkDialog
         invitationLink={invitationLink}
         isOpen={isDialogOpen}

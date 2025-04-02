@@ -8,7 +8,6 @@ import type { DecodedToken } from "@/lib/auth";
 import type React from "react";
 
 import { AppSidebar } from "@/components/app-siderbar";
-import { UserNav } from "@/components/user-nav";
 
 export default function DashboardLayout({
   children,
@@ -22,7 +21,6 @@ export default function DashboardLayout({
       const res = await fetch("/api/auth/user");
       if (res.ok) {
         const userData = await res.json();
-        console.log(userData);
         setUser(userData);
       } else {
         router.push("/login");
