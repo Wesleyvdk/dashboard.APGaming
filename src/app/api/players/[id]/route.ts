@@ -8,8 +8,12 @@ const playerUpdateSchema = z.object({
   firstName: z.string().min(1).optional(),
   lastName: z.string().min(1).optional(),
   inGameName: z.string().min(1).optional(),
-  email: z.string().email().optional().nullable(),
-  dateOfBirth: z.date().optional().nullable(),
+  dateOfBirth: z.preprocess((arg) => {
+    if (typeof arg === 'string') {
+      return new Date(arg);
+    }
+    return arg;
+  }, z.date().nullable()),
   country: z.string().optional().nullable(),
   role: z.string().optional().nullable(),
   rank: z.string().optional().nullable(),
@@ -19,16 +23,18 @@ const playerUpdateSchema = z.object({
   trackerLinks: z.record(z.string()).optional(),
 })
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth()
+
+    const paramProps = await params;
 
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
     }
 
     const player = await prisma.player.findUnique({
-      where: { id: params.id },
+      where: { id: paramProps.id },
       include: {
         teams: true,
         user: {
@@ -53,9 +59,11 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth()
+
+    const paramProps = await params;
 
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
@@ -71,6 +79,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     // Validate the data
     const validationResult = playerUpdateSchema.safeParse(data)
     if (!validationResult.success) {
+      console.log("Validation error:", validationResult.error)
       return NextResponse.json(
         {
           message: "Validation error",
@@ -82,7 +91,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
     // Get the current player
     const currentPlayer = await prisma.player.findUnique({
-      where: { id: params.id },
+      where: { id: paramProps.id },
       include: { user: true },
     })
 
@@ -102,7 +111,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       }
 
       // Check if user already has a player profile
-      if (user.player && user.player.id !== params.id) {
+      if (user.player && user.player.id !== paramProps.id) {
         return NextResponse.json({ message: "User already has a player profile" }, { status: 400 })
       }
     }
@@ -115,7 +124,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         where: {
           players: {
             some: {
-              id: params.id,
+              id: paramProps.id,
             },
           },
         },
@@ -192,12 +201,11 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
     // Update the player
     const player = await prisma.player.update({
-      where: { id: params.id },
+      where: { id: paramProps.id },
       data: {
         firstName: data.firstName,
         lastName: data.lastName,
         inGameName: data.inGameName,
-        email: data.email,
         dateOfBirth: data.dateOfBirth,
         country: data.country,
         role: data.role,
@@ -225,7 +233,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       data: {
         type: "PLAYER_UPDATED",
         message: `Player ${player.firstName} ${player.lastName} (${player.inGameName}) was updated`,
-        user: { connect: { id: session.userId } },
+        user: { connect: { id: session.id } },
         metadata: {
           playerId: player.id,
           playerName: `${player.firstName} ${player.lastName}`,
@@ -241,10 +249,10 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth()
-
+    const paramProps = await params;
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
     }
@@ -256,7 +264,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
 
     // Get the player to be deleted
     const player = await prisma.player.findUnique({
-      where: { id: params.id },
+      where: { id: paramProps.id },
       include: { user: true },
     })
 
@@ -278,7 +286,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
 
     // Delete the player
     await prisma.player.delete({
-      where: { id: params.id },
+      where: { id: paramProps.id },
     })
 
     // Log activity
@@ -286,7 +294,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       data: {
         type: "PLAYER_UPDATED",
         message: `Player ${player.firstName} ${player.lastName} (${player.inGameName}) was deleted`,
-        user: { connect: { id: session.userId } },
+        user: { connect: { id: session.id } },
         metadata: {
           playerName: `${player.firstName} ${player.lastName}`,
           inGameName: player.inGameName,
