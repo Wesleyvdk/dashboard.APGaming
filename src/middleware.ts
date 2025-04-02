@@ -4,6 +4,9 @@ import { verifyToken, hasAnyRole } from "@/lib/auth";
 import { Role } from "@/prisma/generated/client";
 
 export async function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith("/api/public")) {
+    return NextResponse.next()
+  }
   const token = request.cookies.get("token")?.value;
 
   if (!token && !request.nextUrl.pathname.startsWith("/login")) {
