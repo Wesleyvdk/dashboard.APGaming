@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getGames } from "@/lib/games";
+import { getGames, getAllPlayers } from "@/lib/games";
 import { GameRosters } from "./game-rosters";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -13,29 +13,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { prisma } from "@/lib/prisma";
-async function getAllPlayers() {
-  const players = await prisma.player.findMany({
-    include: {
-      teams: {
-        include: {
-          game: true,
-        },
-      },
-      user: {
-        select: {
-          id: true,
-          email: true,
-          username: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-  return players;
-}
 
 export default async function PlayersPage() {
   const games = await getGames();

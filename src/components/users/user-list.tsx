@@ -64,6 +64,7 @@ export function UserList() {
         throw new Error("Failed to fetch users");
       }
     } catch (error) {
+      console.error("Error fetching users:", error);
       toast({
         title: "Error",
         description: "Failed to load users. Please try again.",
