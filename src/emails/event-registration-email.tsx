@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import {
   Body,
   Container,
@@ -91,11 +92,20 @@ export const EventRegistrationEmail = ({
             <Button href={cancelUrl} style={cancelButton}>
               Cancel Registration
             </Button>
+            <Text style={actionText}>
+              If the button doesn't work, copy and paste this link: {cancelUrl}
+            </Text>
 
             {optOutUrl && (
-              <Button href={optOutUrl} style={optOutButton}>
-                Opt Out of Reminder
-              </Button>
+              <>
+                <Button href={optOutUrl} style={optOutButton}>
+                  Opt Out of Reminder
+                </Button>
+                <Text style={actionText}>
+                  If the button doesn't work, copy and paste this link:{" "}
+                  {cancelUrl}
+                </Text>
+              </>
             )}
           </Section>
 

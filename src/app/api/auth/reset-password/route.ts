@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userId = payload.userId;
+    const userId = payload.id;
 
     // Find user
     const user = await prisma.user.findUnique({

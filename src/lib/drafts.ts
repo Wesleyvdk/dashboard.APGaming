@@ -9,17 +9,14 @@ export async function getDrafts(status?: DraftStatus) {
     return [];
   }
 
-  // Build the where clause based on filters
   const where: any = {};
 
-  // If status is provided, filter by status
   if (status) {
     where.status = status;
   }
 
-  // For non-admin users, only show their own drafts
-  if (user.role !== "ADMIN" && user.role !== "NEWS_WRITER") {
-    where.authorId = user.userId;
+  if (!user.roles.includes("ADMIN") && !user.roles.includes("NEWS_WRITER")) {
+    where.authorId = user.id;
   }
 
   return prisma.draft.findMany({
@@ -66,12 +63,11 @@ export async function getDraftById(id: string) {
     },
   });
 
-  // Check if user has permission to view this draft
   if (
     draft &&
-    user.role !== "ADMIN" &&
-    user.role !== "NEWS_WRITER" &&
-    draft.authorId !== user.userId
+    !user.roles.includes("ADMIN") &&
+    !user.roles.includes("NEWS_WRITER") &&
+    draft.authorId !== user.id
   ) {
     return null;
   }

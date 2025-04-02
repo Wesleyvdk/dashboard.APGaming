@@ -30,10 +30,9 @@ export async function GET(
     return NextResponse.json({ error: "Draft not found" }, { status: 404 });
   }
 
-  // Check if user has permission to view this draft
   if (
     !hasAnyRole(user, [Role.ADMIN, Role.NEWS_WRITER]) &&
-    draft.authorId !== user.userId
+    draft.authorId !== user.id
   ) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
@@ -59,8 +58,7 @@ export async function PUT(
     return NextResponse.json({ error: "Draft not found" }, { status: 404 });
   }
 
-  // Check if user has permission to edit this draft
-  if (!hasRole(user, Role.ADMIN) && draft.authorId !== user.userId) {
+  if (!hasRole(user, Role.ADMIN) && draft.authorId !== user.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
@@ -74,14 +72,12 @@ export async function PUT(
     reviewNotes,
   } = await request.json();
 
-  // Create activity log
   const activityData = {
     type: ActivityType.DRAFT_UPDATED,
     message: `Draft "${title}" updated`,
-    userId: user.userId,
+    userId: user.id,
   };
 
-  // Update the draft with a transaction
   const [updatedDraft, _] = await prisma.$transaction([
     prisma.draft.update({
       where: { id: params.id },
@@ -92,7 +88,7 @@ export async function PUT(
         reviewNotes:
           reviewNotes !== undefined ? reviewNotes : draft.reviewNotes,
         ...(!hasRole(user, Role.ADMIN) &&
-          status === "NEEDS_REVISION" && { reviewerId: user.userId }),
+          status === "NEEDS_REVISION" && { reviewerId: user.id }),
         ...(featuredImageId !== undefined && {
           featuredImage: featuredImageId
             ? { connect: { id: featuredImageId } }
@@ -140,19 +136,16 @@ export async function DELETE(
     return NextResponse.json({ error: "Draft not found" }, { status: 404 });
   }
 
-  // Check if user has permission to delete this draft
-  if (!hasRole(user, Role.ADMIN) && draft.authorId !== user.userId) {
+  if (!hasRole(user, Role.ADMIN) && draft.authorId !== user.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
-  // Create activity log
   const activityData = {
     type: ActivityType.DRAFT_UPDATED,
     message: `Draft "${draft.title}" deleted`,
-    userId: user.userId,
+    userId: user.id,
   };
 
-  // Delete the draft with a transaction
   await prisma.$transaction([
     prisma.draft.delete({
       where: { id: params.id },

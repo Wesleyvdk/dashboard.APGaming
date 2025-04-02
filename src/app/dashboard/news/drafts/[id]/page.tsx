@@ -36,13 +36,13 @@ export default async function ViewDraftPage(props: {
   // Check if user has permission to view this draft
   if (
     !hasAnyRole(user, [Role.ADMIN, Role.NEWS_WRITER]) &&
-    draft.authorId !== user.userId
+    draft.authorId !== user.id
   ) {
     redirect("/dashboard/news/drafts");
   }
 
   const isAdmin = hasRole(user, Role.ADMIN);
-  const isAuthor = draft.authorId === user.userId;
+  const isAuthor = draft.authorId === user.id;
   const canEdit = isAdmin || isAuthor;
   const canPublish = isAdmin || (isAuthor && draft.status === "APPROVED");
 

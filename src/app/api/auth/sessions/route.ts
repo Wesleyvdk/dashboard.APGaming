@@ -10,10 +10,9 @@ export async function GET() {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
         }
 
-        // Get all active sessions for the user
         const sessions = await prisma.session.findMany({
             where: {
-                userId: session.userId,
+                userId: session.id,
                 expiresAt: {
                     gt: new Date(),
                 },
@@ -23,7 +22,6 @@ export async function GET() {
             },
         })
 
-        // Mark the current session
         const sessionsWithCurrent = sessions.map((s) => ({
             ...s,
             isCurrent: s.id === session.sessionId,

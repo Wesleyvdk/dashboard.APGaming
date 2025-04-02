@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import {
   Body,
   Button,
@@ -21,8 +22,6 @@ export const ResetPasswordEmail = ({
   resetLink,
   userName,
 }: ResetPasswordEmailProps) => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-
   return (
     <Html>
       <Head />

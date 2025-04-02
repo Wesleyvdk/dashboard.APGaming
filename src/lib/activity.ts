@@ -12,14 +12,14 @@ export async function getRecentActivity(): Promise<Activity[]> {
   return prisma.activity.findMany({
     where: {
       OR: [
-        { userId: user.userId },
+        { userId: user.id },
         {
           user: {
             teams: {
               some: {
                 managers: {
                   some: {
-                    id: user.userId,
+                    id: user.id,
                   },
                 },
               },

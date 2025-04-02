@@ -13,7 +13,7 @@ export async function getUserTeams(): Promise<Team[]> {
     where: {
       managers: {
         some: {
-          id: user.userId,
+          id: user.id,
         },
       },
     },

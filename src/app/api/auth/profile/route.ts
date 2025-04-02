@@ -13,9 +13,8 @@ export async function PUT(request: Request) {
     await request.json();
 
   try {
-    // Get the current user from the database
     const dbUser = await prisma.user.findUnique({
-      where: { id: user.userId },
+      where: { id: user.id },
       select: {
         id: true,
         email: true,
@@ -29,7 +28,6 @@ export async function PUT(request: Request) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    // Verify current password
     if (!dbUser.password) {
       return NextResponse.json(
         { message: "Password not set" },
@@ -48,16 +46,14 @@ export async function PUT(request: Request) {
       );
     }
 
-    // Prepare update data
     const updateData: any = {};
 
     if (username && username !== dbUser.username) {
-      // Check if username is already taken
       const existingUser = await prisma.user.findUnique({
         where: { username },
       });
 
-      if (existingUser && existingUser.id !== user.userId) {
+      if (existingUser && existingUser.id !== user.id) {
         return NextResponse.json(
           { message: "Username is already taken" },
           { status: 400 }
@@ -68,12 +64,11 @@ export async function PUT(request: Request) {
     }
 
     if (email && email !== dbUser.email) {
-      // Check if email is already taken
       const existingUser = await prisma.user.findUnique({
         where: { email },
       });
 
-      if (existingUser && existingUser.id !== user.userId) {
+      if (existingUser && existingUser.id !== user.id) {
         return NextResponse.json(
           { message: "Email is already taken" },
           { status: 400 }
@@ -88,10 +83,9 @@ export async function PUT(request: Request) {
       updateData.password = hashedPassword;
     }
 
-    // Update user if there are changes
     if (Object.keys(updateData).length > 0) {
       await prisma.user.update({
-        where: { id: user.userId },
+        where: { id: user.id },
         data: updateData,
       });
     }

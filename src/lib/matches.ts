@@ -19,7 +19,7 @@ export async function getUpcomingMatches(): Promise<Match[]> {
       team: {
         managers: {
           some: {
-            id: user.userId,
+            id: user.id,
           },
         },
       },

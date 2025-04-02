@@ -1,7 +1,6 @@
 import { DraftForm } from "@/components/drafts/draft-form";
 import { getDraftById } from "@/lib/drafts";
 import { auth, hasRole } from "@/lib/auth";
-import { DraftStatus } from "@/lib/types";
 import { redirect, notFound } from "next/navigation";
 import { Role } from "@/prisma/generated/client";
 
@@ -29,7 +28,7 @@ export default async function EditDraftPage({
   }
 
   // Check if user has permission to edit this draft
-  if (!hasRole(user, Role.ADMIN) && draft.authorId !== user.userId) {
+  if (!hasRole(user, Role.ADMIN) && draft.authorId !== user.id) {
     redirect("/dashboard/news/drafts");
   }
 

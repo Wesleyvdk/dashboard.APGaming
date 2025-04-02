@@ -9,7 +9,7 @@ export async function POST() {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
         }
 
-        await invalidateAllUserSessions(session.userId)
+        await invalidateAllUserSessions(session.id)
 
         const response = NextResponse.json({ success: true })
 

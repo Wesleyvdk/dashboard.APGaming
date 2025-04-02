@@ -133,7 +133,7 @@ export async function POST(request: Request) {
     const activityData = {
       type: ActivityType.MEDIA_UPLOADED,
       message: `Media "${file.name}" uploaded`,
-      userId: user.userId,
+      userId: user.id,
     };
 
     // Create the media item with a transaction
@@ -154,7 +154,7 @@ export async function POST(request: Request) {
           caption,
           tags: tagArray,
           folder,
-          uploadedBy: { connect: { id: user.userId } },
+          uploadedBy: { connect: { id: user.id } },
         },
       }),
       prisma.activity.create({

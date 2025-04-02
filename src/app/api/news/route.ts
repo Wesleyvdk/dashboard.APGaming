@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     data: {
       title,
       content,
-      authorId: user.userId,
+      authorId: user.id,
       publishedAt: isPublished ? new Date() : null,
       tags: {
         connect: tags.map((tagId: string) => ({ id: tagId })),

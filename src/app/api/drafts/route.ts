@@ -16,22 +16,18 @@ export async function GET(request: Request) {
   const status = searchParams.get("status") as DraftStatus | null;
   const authorId = searchParams.get("authorId");
 
-  // Build the where clause based on filters
   const where: any = {};
 
-  // If status is provided, filter by status
   if (status) {
     where.status = status;
   }
 
-  // If authorId is provided, filter by author
   if (authorId) {
     where.authorId = authorId;
   }
 
-  // For non-admin users, only show their own drafts
   if (!hasAnyRole(user, [Role.ADMIN, Role.NEWS_WRITER])) {
-    where.authorId = user.userId;
+    where.authorId = user.id;
   }
 
   const drafts = await prisma.draft.findMany({
@@ -72,36 +68,34 @@ export async function POST(request: Request) {
   const { title, content, tags, featuredImageId, mediaItemIds, status } =
     await request.json();
 
-  // Create activity log
   const activityData = {
     type: ActivityType.DRAFT_CREATED,
     message: `Draft "${title}" created`,
-    userId: user.userId,
+    userId: user.id,
   };
 
-  // Create the draft with a transaction to ensure both operations succeed or fail together
   const [draft, _] = await prisma.$transaction([
     prisma.draft.create({
       data: {
         title,
         content,
-        authorId: user.userId,
+        authorId: user.id,
         status: status || "IN_PROGRESS",
         ...(featuredImageId && {
           featuredImage: { connect: { id: featuredImageId } },
         }),
         ...(tags &&
           tags.length > 0 && {
-            tags: {
-              connect: tags.map((tagId: string) => ({ id: tagId })),
-            },
-          }),
+          tags: {
+            connect: tags.map((tagId: string) => ({ id: tagId })),
+          },
+        }),
         ...(mediaItemIds &&
           mediaItemIds.length > 0 && {
-            mediaItems: {
-              connect: mediaItemIds.map((id: string) => ({ id })),
-            },
-          }),
+          mediaItems: {
+            connect: mediaItemIds.map((id: string) => ({ id })),
+          },
+        }),
       },
       include: {
         tags: true,

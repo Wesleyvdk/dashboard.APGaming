@@ -11,7 +11,7 @@ export async function getUserTasks(): Promise<Task[]> {
 
   return prisma.task.findMany({
     where: {
-      userId: user.userId,
+      userId: user.id,
       status: {
         not: "COMPLETED",
       },

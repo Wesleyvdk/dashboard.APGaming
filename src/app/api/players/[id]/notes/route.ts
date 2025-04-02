@@ -16,9 +16,9 @@ export async function GET(
     where: {
       playerId: params.id,
       OR: [
-        { authorId: user.userId },
+        { authorId: user.id },
         { isPrivate: false },
-        { author: { role: "ADMIN" } },
+        { author: { roles: { has: "ADMIN" } } },
       ],
     },
     include: {
@@ -51,7 +51,7 @@ export async function POST(
   const note = await prisma.playerNote.create({
     data: {
       playerId: params.id,
-      authorId: user.userId,
+      authorId: user.id,
       content,
       isPrivate,
     },

@@ -30,7 +30,7 @@ export async function POST(
   }
 
   // Check if user has permission to publish this draft
-  if (hasRole(user, Role.ADMIN) && draft.authorId !== user.userId) {
+  if (hasRole(user, Role.ADMIN) && draft.authorId !== user.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
@@ -46,7 +46,7 @@ export async function POST(
   const activityData = {
     type: ActivityType.DRAFT_PUBLISHED,
     message: `Draft "${draft.title}" published as news`,
-    userId: user.userId,
+    userId: user.id,
   };
 
   // Publish the draft (create news article) and delete the draft

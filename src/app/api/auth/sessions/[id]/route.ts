@@ -15,7 +15,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
             where: { id: params.id },
         })
 
-        if (!sessionToDelete || sessionToDelete.userId !== session.userId) {
+        if (!sessionToDelete || sessionToDelete.userId !== session.id) {
             return NextResponse.json({ message: "Session not found" }, { status: 404 })
         }
 

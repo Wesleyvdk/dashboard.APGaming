@@ -1,0 +1,946 @@
+{
+    "info": {
+      "name": "AP Gaming API",
+      "description": "API collection for AP Gaming dashboard and public website",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "http://localhost:3000",
+        "type": "string",
+        "description": "Base URL for the API (change to your production URL when deployed)"
+      }
+    ],
+    "item": [
+      {
+        "name": "Public API",
+        "description": "Endpoints accessible from the public website",
+        "item": [
+          {
+            "name": "Teams",
+            "item": [
+              {
+                "name": "Get All Teams",
+                "request": {
+                  "method": "GET",
+                  "url": {
+                    "raw": "{{baseUrl}}/api/public/teams",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "public", "teams"],
+                    "query": [
+                      {
+                        "key": "gameId",
+                        "value": "",
+                        "description": "Filter teams by game ID",
+                        "disabled": true
+                      }
+                    ]
+                  },
+                  "description": "Returns all teams with their associated games and player count"
+                },
+                "response": [
+                  {
+                    "name": "Success Response",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/teams",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "teams"]
+                      }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"teams\": [\n    {\n      \"id\": \"team123\",\n      \"name\": \"AP Valorant\",\n      \"game\": {\n        \"id\": \"game456\",\n        \"name\": \"Valorant\"\n      },\n      \"playerCount\": 5,\n      \"createdAt\": \"2023-01-01T12:00:00.000Z\",\n      \"updatedAt\": \"2023-01-01T12:00:00.000Z\"\n    }\n  ]\n}"
+                  }
+                ]
+              },
+              {
+                "name": "Get Team by ID",
+                "request": {
+                  "method": "GET",
+                  "url": {
+                    "raw": "{{baseUrl}}/api/public/teams/:id",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "public", "teams", ":id"],
+                    "variable": [
+                      {
+                        "key": "id",
+                        "value": "team123",
+                        "description": "Team ID"
+                      }
+                    ]
+                  },
+                  "description": "Returns detailed information about a specific team including players"
+                },
+                "response": [
+                  {
+                    "name": "Success Response",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/teams/:id",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "teams", ":id"],
+                        "variable": [
+                          {
+                            "key": "id",
+                            "value": "team123"
+                          }
+                        ]
+                      }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"team\": {\n    \"id\": \"team123\",\n    \"name\": \"AP Valorant\",\n    \"game\": {\n      \"id\": \"game456\",\n      \"name\": \"Valorant\"\n    },\n    \"players\": [\n      {\n        \"id\": \"player123\",\n        \"firstName\": \"John\",\n        \"lastName\": \"Doe\",\n        \"inGameName\": \"APGamer\",\n        \"role\": \"Entry Fragger\",\n        \"rank\": \"Immortal\",\n        \"country\": \"Belgium\"\n      }\n    ],\n    \"createdAt\": \"2023-01-01T12:00:00.000Z\",\n    \"updatedAt\": \"2023-01-01T12:00:00.000Z\"\n  }\n}"
+                  },
+                  {
+                    "name": "Not Found Response",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/teams/:id",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "teams", ":id"],
+                        "variable": [
+                          {
+                            "key": "id",
+                            "value": "nonexistent"
+                          }
+                        ]
+                      }
+                    },
+                    "status": "Not Found",
+                    "code": 404,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"error\": \"Team not found\"\n}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Players",
+            "item": [
+              {
+                "name": "Get All Players",
+                "request": {
+                  "method": "GET",
+                  "url": {
+                    "raw": "{{baseUrl}}/api/public/players",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "public", "players"],
+                    "query": [
+                      {
+                        "key": "teamId",
+                        "value": "",
+                        "description": "Filter players by team ID",
+                        "disabled": true
+                      },
+                      {
+                        "key": "gameId",
+                        "value": "",
+                        "description": "Filter players by game ID",
+                        "disabled": true
+                      }
+                    ]
+                  },
+                  "description": "Returns all players with their team affiliations"
+                },
+                "response": [
+                  {
+                    "name": "Success Response",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/players",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "players"]
+                      }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"players\": [\n    {\n      \"id\": \"player123\",\n      \"firstName\": \"John\",\n      \"lastName\": \"Doe\",\n      \"inGameName\": \"APGamer\",\n      \"role\": \"Entry Fragger\",\n      \"rank\": \"Immortal\",\n      \"country\": \"Belgium\",\n      \"teams\": [\n        {\n          \"id\": \"team123\",\n          \"name\": \"AP Valorant\",\n          \"game\": {\n            \"id\": \"game456\",\n            \"name\": \"Valorant\"\n          }\n        }\n      ],\n      \"createdAt\": \"2023-01-01T12:00:00.000Z\",\n      \"updatedAt\": \"2023-01-01T12:00:00.000Z\"\n    }\n  ]\n}"
+                  }
+                ]
+              },
+              {
+                "name": "Get Player by ID",
+                "request": {
+                  "method": "GET",
+                  "url": {
+                    "raw": "{{baseUrl}}/api/public/players/:id",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "public", "players", ":id"],
+                    "variable": [
+                      {
+                        "key": "id",
+                        "value": "player123",
+                        "description": "Player ID"
+                      }
+                    ]
+                  },
+                  "description": "Returns detailed information about a specific player"
+                },
+                "response": [
+                  {
+                    "name": "Success Response",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/players/:id",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "players", ":id"],
+                        "variable": [
+                          {
+                            "key": "id",
+                            "value": "player123"
+                          }
+                        ]
+                      }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"player\": {\n    \"id\": \"player123\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"inGameName\": \"APGamer\",\n    \"country\": \"Belgium\",\n    \"role\": \"Entry Fragger\",\n    \"rank\": \"Immortal\",\n    \"socialLinks\": [\n      {\n        \"platform\": \"twitter\",\n        \"url\": \"https://twitter.com/apgamer\"\n      }\n    ],\n    \"trackerLinks\": [\n      {\n        \"platform\": \"tracker.gg\",\n        \"url\": \"https://tracker.gg/valorant/profile/riot/APGamer\"\n      }\n    ],\n    \"teams\": [\n      {\n        \"id\": \"team123\",\n        \"name\": \"AP Valorant\",\n        \"game\": {\n          \"id\": \"game456\",\n          \"name\": \"Valorant\"\n        }\n      }\n    ],\n    \"createdAt\": \"2023-01-01T12:00:00.000Z\",\n    \"updatedAt\": \"2023-01-01T12:00:00.000Z\"\n  }\n}"
+                  },
+                  {
+                    "name": "Not Found Response",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/players/:id",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "players", ":id"],
+                        "variable": [
+                          {
+                            "key": "id",
+                            "value": "nonexistent"
+                          }
+                        ]
+                      }
+                    },
+                    "status": "Not Found",
+                    "code": 404,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"error\": \"Player not found\"\n}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "News",
+            "item": [
+              {
+                "name": "Get All News Articles",
+                "request": {
+                  "method": "GET",
+                  "url": {
+                    "raw": "{{baseUrl}}/api/public/news",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "public", "news"],
+                    "query": [
+                      {
+                        "key": "limit",
+                        "value": "10",
+                        "description": "Number of articles per page",
+                        "disabled": false
+                      },
+                      {
+                        "key": "page",
+                        "value": "1",
+                        "description": "Page number",
+                        "disabled": false
+                      },
+                      {
+                        "key": "sort",
+                        "value": "desc",
+                        "description": "Sort direction (asc or desc)",
+                        "disabled": false
+                      },
+                      {
+                        "key": "tag",
+                        "value": "",
+                        "description": "Filter by tag name",
+                        "disabled": true
+                      }
+                    ]
+                  },
+                  "description": "Returns news articles with pagination, sorting, and filtering"
+                },
+                "response": [
+                  {
+                    "name": "Success Response",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/news?limit=10&page=1&sort=desc",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "news"],
+                        "query": [
+                          {
+                            "key": "limit",
+                            "value": "10"
+                          },
+                          {
+                            "key": "page",
+                            "value": "1"
+                          },
+                          {
+                            "key": "sort",
+                            "value": "desc"
+                          }
+                        ]
+                      }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"articles\": [\n    {\n      \"id\": \"news123\",\n      \"title\": \"AP Gaming Wins Tournament\",\n      \"author\": {\n        \"id\": \"user456\",\n        \"username\": \"admin\",\n        \"profilePicture\": \"https://example.com/profile.jpg\"\n      },\n      \"publishedAt\": \"2023-01-01T12:00:00.000Z\",\n      \"tags\": [\n        {\n          \"id\": \"tag789\",\n          \"name\": \"tournament\"\n        }\n      ],\n      \"featuredImage\": {\n        \"id\": \"image123\",\n        \"url\": \"https://example.com/image.jpg\",\n        \"alt\": \"Tournament trophy\"\n      }\n    }\n  ],\n  \"pagination\": {\n    \"total\": 25,\n    \"pages\": 3,\n    \"current\": 1,\n    \"limit\": 10\n  }\n}"
+                  }
+                ]
+              },
+              {
+                "name": "Get News Article by ID",
+                "request": {
+                  "method": "GET",
+                  "url": {
+                    "raw": "{{baseUrl}}/api/public/news/:id",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "public", "news", ":id"],
+                    "variable": [
+                      {
+                        "key": "id",
+                        "value": "news123",
+                        "description": "News Article ID"
+                      }
+                    ]
+                  },
+                  "description": "Returns detailed information about a specific news article"
+                },
+                "response": [
+                  {
+                    "name": "Success Response",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/news/:id",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "news", ":id"],
+                        "variable": [
+                          {
+                            "key": "id",
+                            "value": "news123"
+                          }
+                        ]
+                      }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"article\": {\n    \"id\": \"news123\",\n    \"title\": \"AP Gaming Wins Tournament\",\n    \"content\": \"<p>The AP Gaming team has won the regional tournament...</p>\",\n    \"author\": {\n      \"id\": \"user456\",\n      \"username\": \"admin\",\n      \"profilePicture\": \"https://example.com/profile.jpg\"\n    },\n    \"publishedAt\": \"2023-01-01T12:00:00.000Z\",\n    \"tags\": [\n      {\n        \"id\": \"tag789\",\n        \"name\": \"tournament\"\n      }\n    ],\n    \"featuredImage\": {\n      \"id\": \"image123\",\n      \"url\": \"https://example.com/image.jpg\",\n      \"alt\": \"Tournament trophy\"\n    },\n    \"mediaItems\": [\n      {\n        \"id\": \"media456\",\n        \"url\": \"https://example.com/gallery.jpg\",\n        \"alt\": \"Team photo\",\n        \"caption\": \"The team celebrating their victory\"\n      }\n    ]\n  }\n}"
+                  },
+                  {
+                    "name": "Not Found Response",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/news/:id",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "news", ":id"],
+                        "variable": [
+                          {
+                            "key": "id",
+                            "value": "nonexistent"
+                          }
+                        ]
+                      }
+                    },
+                    "status": "Not Found",
+                    "code": 404,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"error\": \"Article not found or not published\"\n}"
+                  }
+                ]
+              },
+              {
+                "name": "Get News Tags",
+                "request": {
+                  "method": "GET",
+                  "url": {
+                    "raw": "{{baseUrl}}/api/public/news/tags",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "public", "news", "tags"]
+                  },
+                  "description": "Returns all available news tags with article counts"
+                },
+                "response": [
+                  {
+                    "name": "Success Response",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/news/tags",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "news", "tags"]
+                      }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"tags\": [\n    {\n      \"id\": \"tag123\",\n      \"name\": \"tournament\",\n      \"articleCount\": 5\n    },\n    {\n      \"id\": \"tag456\",\n      \"name\": \"announcement\",\n      \"articleCount\": 3\n    }\n  ]\n}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Events",
+            "item": [
+              {
+                "name": "Get All Events",
+                "request": {
+                  "method": "GET",
+                  "url": {
+                    "raw": "{{baseUrl}}/api/public/events",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "public", "events"],
+                    "query": [
+                      {
+                        "key": "limit",
+                        "value": "10",
+                        "description": "Number of events per page",
+                        "disabled": false
+                      },
+                      {
+                        "key": "page",
+                        "value": "1",
+                        "description": "Page number",
+                        "disabled": false
+                      }
+                    ]
+                  },
+                  "description": "Returns all public events with pagination"
+                },
+                "response": [
+                  {
+                    "name": "Success Response",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/events?limit=10&page=1",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "events"],
+                        "query": [
+                          {
+                            "key": "limit",
+                            "value": "10"
+                          },
+                          {
+                            "key": "page",
+                            "value": "1"
+                          }
+                        ]
+                      }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"events\": [\n    {\n      \"id\": \"event123\",\n      \"title\": \"Minecraft Server Launch Party\",\n      \"description\": \"Join us for the launch of our new Minecraft server!\",\n      \"startDate\": \"2025-04-25T14:00:00.000Z\",\n      \"endDate\": \"2025-04-25T18:00:00.000Z\",\n      \"location\": \"Campus Ellerman 01.06\",\n      \"type\": \"Community\",\n      \"maxAttendees\": 50,\n      \"attendeeCount\": 12\n    }\n  ],\n  \"pagination\": {\n    \"total\": 5,\n    \"pages\": 1,\n    \"current\": 1,\n    \"limit\": 10\n  }\n}"
+                  }
+                ]
+              },
+              {
+                "name": "Get Event by ID",
+                "request": {
+                  "method": "GET",
+                  "url": {
+                    "raw": "{{baseUrl}}/api/public/events/:id",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "public", "events", ":id"],
+                    "variable": [
+                      {
+                        "key": "id",
+                        "value": "event123",
+                        "description": "Event ID"
+                      }
+                    ]
+                  },
+                  "description": "Returns detailed information about a specific event"
+                },
+                "response": [
+                  {
+                    "name": "Success Response",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/events/:id",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "events", ":id"],
+                        "variable": [
+                          {
+                            "key": "id",
+                            "value": "event123"
+                          }
+                        ]
+                      }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"id\": \"event123\",\n  \"title\": \"Minecraft Server Launch Party\",\n  \"description\": \"Join us for the launch of our new Minecraft server!\",\n  \"startDate\": \"2025-04-25T14:00:00.000Z\",\n  \"endDate\": \"2025-04-25T18:00:00.000Z\",\n  \"location\": \"Campus Ellerman 01.06\",\n  \"type\": \"Community\",\n  \"maxAttendees\": 50,\n  \"attendeeCount\": 12,\n  \"hasAvailableSpots\": true\n}"
+                  },
+                  {
+                    "name": "Not Found Response",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/events/:id",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "events", ":id"],
+                        "variable": [
+                          {
+                            "key": "id",
+                            "value": "nonexistent"
+                          }
+                        ]
+                      }
+                    },
+                    "status": "Not Found",
+                    "code": 404,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"error\": \"Event not found or not public\"\n}"
+                  }
+                ]
+              },
+              {
+                "name": "Register for Event",
+                "request": {
+                  "method": "POST",
+                  "url": {
+                    "raw": "{{baseUrl}}/api/public/events/:id/register",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "public", "events", ":id", "register"],
+                    "variable": [
+                      {
+                        "key": "id",
+                        "value": "event123",
+                        "description": "Event ID"
+                      }
+                    ]
+                  },
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@student.ap.be\",\n  \"wantsReminder\": true\n}"
+                  },
+                  "description": "Register for an event with name, email, and reminder preference"
+                },
+                "response": [
+                  {
+                    "name": "Success Response",
+                    "originalRequest": {
+                      "method": "POST",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/events/:id/register",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "events", ":id", "register"],
+                        "variable": [
+                          {
+                            "key": "id",
+                            "value": "event123"
+                          }
+                        ]
+                      },
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": {
+                        "mode": "raw",
+                        "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@student.ap.be\",\n  \"wantsReminder\": true\n}"
+                      }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"success\": true,\n  \"registration\": {\n    \"id\": \"reg123\",\n    \"eventId\": \"event123\",\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@student.ap.be\",\n    \"wantsReminder\": true,\n    \"status\": \"registered\",\n    \"registeredAt\": \"2023-01-01T12:00:00.000Z\"\n  }\n}"
+                  },
+                  {
+                    "name": "Already Registered Response",
+                    "originalRequest": {
+                      "method": "POST",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/events/:id/register",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "events", ":id", "register"],
+                        "variable": [
+                          {
+                            "key": "id",
+                            "value": "event123"
+                          }
+                        ]
+                      },
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": {
+                        "mode": "raw",
+                        "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@student.ap.be\",\n  \"wantsReminder\": true\n}"
+                      }
+                    },
+                    "status": "Bad Request",
+                    "code": 400,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"error\": \"You are already registered for this event\"\n}"
+                  }
+                ]
+              },
+              {
+                "name": "Event Actions (Cancel/Opt-Out)",
+                "request": {
+                  "method": "GET",
+                  "url": {
+                    "raw": "{{baseUrl}}/api/public/events/actions?action=cancel-registration&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "public", "events", "actions"],
+                    "query": [
+                      {
+                        "key": "action",
+                        "value": "cancel-registration",
+                        "description": "Action to perform (cancel-registration or opt-out-reminder)",
+                        "disabled": false
+                      },
+                      {
+                        "key": "token",
+                        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                        "description": "Security token for the action",
+                        "disabled": false
+                      }
+                    ]
+                  },
+                  "description": "Perform actions on event registrations (cancel registration or opt out of reminders)"
+                },
+                "response": [
+                  {
+                    "name": "Success Response - Cancel Registration",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/public/events/actions?action=cancel-registration&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "public", "events", "actions"],
+                        "query": [
+                          {
+                            "key": "action",
+                            "value": "cancel-registration"
+                          },
+                          {
+                            "key": "token",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                          }
+                        ]
+                      }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "text/html"
+                      }
+                    ],
+                    "body": "<!DOCTYPE html>\n<html>\n<head>\n  <title>Registration Cancelled</title>\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <!-- HTML content for success page -->\n</head>\n<body>\n  <h1>Registration Cancelled</h1>\n  <div class=\"card\">\n    <div class=\"message\">\n      <p>Your registration has been successfully cancelled.</p>\n    </div>\n  </div>\n</body>\n</html>"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Dashboard API",
+        "description": "Endpoints for the dashboard application (authenticated)",
+        "item": [
+          {
+            "name": "Authentication",
+            "item": [
+              {
+                "name": "Login",
+                "request": {
+                  "method": "POST",
+                  "url": {
+                    "raw": "{{baseUrl}}/api/auth/login",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "auth", "login"]
+                  },
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"email\": \"admin@apgaming.be\",\n  \"password\": \"password123\"\n}"
+                  },
+                  "description": "Authenticate a user and get a JWT token"
+                },
+                "response": [
+                  {
+                    "name": "Success Response",
+                    "originalRequest": {
+                      "method": "POST",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/auth/login",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "auth", "login"]
+                      },
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": {
+                        "mode": "raw",
+                        "raw": "{\n  \"email\": \"admin@apgaming.be\",\n  \"password\": \"password123\"\n}"
+                      }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"id\": \"user123\",\n    \"email\": \"admin@apgaming.be\",\n    \"name\": \"Admin User\",\n    \"role\": \"ADMIN\"\n  }\n}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Events Management",
+            "item": [
+              {
+                "name": "Get Event Attendance",
+                "request": {
+                  "method": "GET",
+                  "url": {
+                    "raw": "{{baseUrl}}/api/events/:id/attendance",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "events", ":id", "attendance"],
+                    "variable": [
+                      {
+                        "key": "id",
+                        "value": "event123",
+                        "description": "Event ID"
+                      }
+                    ]
+                  },
+                  "header": [
+                    {
+                      "key": "Authorization",
+                      "value": "Bearer {{token}}"
+                    }
+                  ],
+                  "description": "Get attendance list for an event (requires authentication)"
+                },
+                "response": [
+                  {
+                    "name": "Success Response",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/events/:id/attendance",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "events", ":id", "attendance"],
+                        "variable": [
+                          {
+                            "key": "id",
+                            "value": "event123"
+                          }
+                        ]
+                      },
+                      "header": [
+                        {
+                          "key": "Authorization",
+                          "value": "Bearer {{token}}"
+                        }
+                      ]
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": "{\n  \"attendees\": [\n    {\n      \"id\": \"reg123\",\n      \"name\": \"John Doe\",\n      \"email\": \"john.doe@student.ap.be\",\n      \"wantsReminder\": true,\n      \"status\": \"registered\",\n      \"registeredAt\": \"2023-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"stats\": {\n    \"total\": 25,\n    \"registered\": 25,\n    \"cancelled\": 0,\n    \"wantReminders\": 18\n  }\n}"
+                  }
+                ]
+              },
+              {
+                "name": "Export Attendance as CSV",
+                "request": {
+                  "method": "GET",
+                  "url": {
+                    "raw": "{{baseUrl}}/api/events/:id/export-attendance",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "events", ":id", "export-attendance"],
+                    "variable": [
+                      {
+                        "key": "id",
+                        "value": "event123",
+                        "description": "Event ID"
+                      }
+                    ]
+                  },
+                  "header": [
+                    {
+                      "key": "Authorization",
+                      "value": "Bearer {{token}}"
+                    }
+                  ],
+                  "description": "Export event attendance as CSV (requires authentication)"
+                },
+                "response": [
+                  {
+                    "name": "Success Response",
+                    "originalRequest": {
+                      "method": "GET",
+                      "url": {
+                        "raw": "{{baseUrl}}/api/events/:id/export-attendance",
+                        "host": ["{{baseUrl}}"],
+                        "path": ["api", "events", ":id", "export-attendance"],
+                        "variable": [
+                          {
+                            "key": "id",
+                            "value": "event123"
+                          }
+                        ]
+                      },
+                      "header": [
+                        {
+                          "key": "Authorization",
+                          "value": "Bearer {{token}}"
+                        }
+                      ]
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "text/csv"
+                      },
+                      {
+                        "key": "Content-Disposition",
+                        "value": "attachment; filename=\"event-attendance.csv\""
+                      }
+                    ],
+                    "body": "Name,Email,Status,Registered At,Wants Reminder\nJohn Doe,john.doe@student.ap.be,registered,2023-01-01T12:00:00.000Z,Yes"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  
+  
